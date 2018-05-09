@@ -57,7 +57,28 @@ Je kan dit testen met een nslookup. Jouw dns-server zou dan tevoorschijn moeten 
 
 Nu gaan we een forward lookup zone configureren met bind9. Hiervoor configureren we volgende bestanden.
 **"/etc/bind/named.conf.local"**
-Je kan voorbeeld inhoud van deze file bovenaan vinden.
+Je kan voorbeeld inhoud van deze file bovenaan ook vinden.
+
+```
+;
+; BIND data file for local loopback interface
+;
+$TTL    604800
+@       IN      SOA     puppetdns.projecthosting. root.projecthosting. (
+                              3         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+; name servers - NS records
+        IN      NS      puppetdns.projecthosting.
+        IN      A       192.168.137.106
+        IN      AAAA    ::1
+; name servers - A records
+puppetdns.projecthosting.       IN      A       192.168.137.106
+puppetlamp.projecthosting.      IN      A       192.168.137.105
+puppet.projecthosting.          IN      A       192.168.137.104
+```
 
 Bij het bestand hieronder moet men exact zijn, anders werkt het niet! Een template kan men gebruiken via onderstaand commando.  
 
