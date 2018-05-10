@@ -232,6 +232,7 @@ Vervolgens gaan we onze eigen module maken. Het scheve 'lamp' is de naam van je 
 **cd /etc/puppetlabs/code/environments/production/modules**
 **sudo mkdir -p /etc/puppetlabs/code/environments/production/modules/_lamp_/manifests**
 **sudo mkdir -p /etc/puppetlabs/code/environments/production/modules/_users_/manifests**
+**sudo mkdir -p /etc/puppetlabs/code/environments/production/modules/_osticket_/manifests**
 
 Vervolgens ga je in het onderstaande bestand het volgende invullen. Het moet 'init.pp' noemen! 
 Pas op met het kopiëren van hieronder! Linux kan hier problemen mee krijgen (spaties/tabs)! 
@@ -356,6 +357,31 @@ file { '/etc/vsftpd.chroot_list':
 } 
 ```
 
+Voeg ook onderstaand manifest toe. Dit doet al wat van instellingen voor osTicket.
+
+```
+class osticket {	
+	file { '/etc/php/7.0/fpm/php.ini':
+        owner   => 'root',
+        group   => 'root',
+        content => template('/srv/puppet/files/php.ini'),
+	}
+
+	# reload php7.0-fpm
+	exec { 'php7 reload' :
+		command => '/usr/sbin/service php7.0-fpm reload',
+	}
+	
+	# Make directory for osticket
+	file { '/var/www/html/osticket':
+		ensure => 'directory',
+		owner  => 'www-data',
+		group  => 'www-data',
+		mode   => '0755',
+	}
+}
+```
+
 ### Generating system users and mysql users with Python3 
 
 Via onderstaand scriptje kan je op basis van een inputfile met users en wachtwoorden gescheiden door komma's, 
@@ -455,7 +481,8 @@ node 'puppetlamp' {
 	include users  
 
     class { '::mysql::server': 
-        root_password    => 'r0668236', 
+        root_password    => 'r0668236',
+	remove_default_accounts	=> true,
 		**Insert from this line**
 	}
 }
@@ -481,14 +508,69 @@ Nu moet men nog het oorspronkelijk bestand verwijderen en vervangen door ons nie
 **sudo rm /etc/puppetlabs/code/environments/production/manifests/site.pp**
 **sudo cp site.pp /etc/puppetlabs/code/environments/production/manifests/site.pp**
 
-Vervolgens kan men op de puppet agent volgende commando's uitvoeren. 
-Het eerste commando genereert voor ons een keypair voor vsftpd, dit moet maar eenmalig. 
-Het tweede zorgt voor de automatische configuratie van de lamp-stack.
+Voeg nu nog onderstaande sql-gebruiker toe in het hoofdmanifest site.pp.
+```
+"osticket@localhost" => {
+				ensure => "present",
+				max_connections_per_hour => "0",
+				max_user_connections => "0",
+				password_hash => "*5BBB23A9A9EB2121530E29594602EC7A69BAA4CF",
+			},
+			
+"osticketdb" => {
+				ensure => "present",
+				charset => "utf8",
+			},
+			
+"osticket@localhost/osticket.*" => {
+				ensure => "present",
+				options => ["GRANT"],
+				privileges => ["ALL"],
+				table => "osticket.*",
+				user => "osticket@localhost",
+			},
+```
+
+Vervolgens kan men op de puppet agent volgende commando uitvoeren.  
+Het start de automatische configuratie van je server.
+**sudo /opt/puppetlabs/bin/puppet agent -t**
+
+## Postconfiguratie
+### VSFTPD
+Onderstaand commando genereert voor ons een keypair voor vsftpd, dit moet maar eenmalig.
 
 **sudo openssl req -x509 -nodes -newkey rsa:2048 -keyout /etc/ssl/private/vsftpdserverkey.pem -out /etc/ssl/certs/vsftpdcertificate.pem -days 365**
 
-**sudo /opt/puppetlabs/bin/puppet agent -t**
+### osTicket
+Om osTicket correct te installeren, volg je onderstaande stappen.
 
+**cd /var/www/html/osticket**
+**sudo wget http://osticket.com/sites/default/files/download/osTicket-v1.10.zip**
+
+Zodra het downloaden is gedaan, ga je het bestand uitpakken. Installeer eerst eventueel unzip (**sudo apt-get install unzip**).
+
+**sudo unzip osTicket-v1.10.zip**
+
+Vervolgens kopiër je de sample config file.
+
+**sudo cp upload/include/ost-sampleconfig.php upload/include/ost-config.php**
+
+Verander daarna de eigenaar van alle osticket bestanden en mappen naar "www-data" (zowel user als group).
+
+**sudo chown -R www-data:www-data /var/www/html/osticket**
+
+Nu is het tijd om alles via de webinterface te configureren. Surf naar volgende link.
+
+**http://your-domain.com/osticket/upload/setup/install.php**
+
+Volg de installatie instructies aandachtig. Na installatie verwijder je nog de setup directory en verander je de permissies van osTicket config file.
+
+**sudo rm -rf /var/www/html/osticket/upload/setup**
+**sudo chmod 0644 /var/www/html/osticket/include/ost-config.php**
+
+Nu zou osTicket werkende moeten zijn!
+
+# Conclusie
 Als alles goed verlopen is, kan je nu via **"http://ip_adres/~username"** zien dat je lamp-stack werkt na toevoegen van een bestand! 
 Als men nu via bijvoorbeeld NetBeans fileupload instelt, zal je zien dat het zou moeten werken. Dan ziet de url er voor nu als volgt uit. **http://ip_adres/~username.**.
 
