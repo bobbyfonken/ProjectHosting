@@ -2,6 +2,23 @@
 This project contains the documents necessary to configure your Puppetfarm.
 This will automate the configuration of file upload with PHP aswell as make the users for the system and the database.
 
+## inhoud
+ * [ProjectHosting](#projecthosting---php-file-server-with-puppet)
+      * [Preconfiguratie](#preconfiguratie)
+         * [DNS](#dns)
+         * [NTP](#ntp)
+      * [Puppet installatie](#puppet-installatie)
+         * [Puppet master](#puppet-master)
+         * [Puppet agent](#puppet-agent)
+         * [Puppet certificaten](#puppet-certificaten)
+         * [Puppet manifesten/modules](#puppet-manifestenmodules)
+      * [Puppet LAMP-stack](#puppet-lamp-stack)
+         * [Generating system users and mysql users with Python3](#generating-system-users-and-mysql-users-with-python3)
+      * [Postconfiguratie](#postconfiguratie)
+         * [VSFTPD](#vsftpd)
+         * [osTicket](#osticket)
+   * [Conclusie](#conclusie)
+
 ## Preconfiguratie
 ### DNS
 We moeten eerst de namen van onze machines veranderen. Verander de naam van de Puppet master in **"puppet"**. Dit is een verplichtheid. 
