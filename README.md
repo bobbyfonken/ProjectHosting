@@ -510,18 +510,21 @@ Nu moet men nog het oorspronkelijk bestand verwijderen en vervangen door ons nie
 
 Voeg nu nog onderstaande sql-gebruiker toe in het hoofdmanifest site.pp.
 ```
+Onder Users:
 "osticket@localhost" => {
 				ensure => "present",
 				max_connections_per_hour => "0",
 				max_user_connections => "0",
 				password_hash => "*5BBB23A9A9EB2121530E29594602EC7A69BAA4CF",
 			},
-			
-"osticketdb" => {
+
+Onder Database:
+"osticket" => {
 				ensure => "present",
 				charset => "utf8",
 			},
-			
+
+Onder Grants:
 "osticket@localhost/osticket.*" => {
 				ensure => "present",
 				options => ["GRANT"],
