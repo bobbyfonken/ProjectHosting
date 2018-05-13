@@ -25,11 +25,12 @@ We moeten eerst de namen van onze machines veranderen. Verander de naam van de P
 De andere mag je kiezen, maar zorg voor een duidelijke naam!
 Hieronder vind je een overzicht van de VM's met IP-adres en naam.
 
-| Servername 	| Host-only		| Nat         |
-| --------------|:-------------:| -----------:|
-| puppet 		    |192.168.137.104 | 10.148.14.8 |
-| puppetLamp 	  |192.168.137.105 | 10.148.14.7 |
-| puppetDns 	  |192.168.137.106 | 10.148.14.4 |
+| Servername 		| Host-only		 | Nat         |
+|-------------------|:--------------:|------------:|
+| puppet 			|192.168.137.104 | 10.148.14.8 |
+| puppetLamp 		|192.168.137.105 | 10.148.14.7 |
+| puppetDns 		|192.168.137.106 | 10.148.14.4 |
+| puppetDatabase 	|192.168.137.107 | 10.148.14.1 |
 
 We zetten eerst de netwerkconfiguratie goed. Doe dit voor elke VM zoals hieronder. 
 Veranderen het "address" naar het adres van jouw machine. 
@@ -50,7 +51,7 @@ Vervolgens zullen we de namen van de machines veranderen in de volgende file.
 **"/etc/hostname"**
 
 Daarna zullen we op elke machine de **"/etc/hosts"** file aanpassen zodat puppet master en agent later met elkaar kunnen communiceren.
-Pas deze file zo aan dat de agent met de master kunnen communiceren.
+Pas deze file zo aan dat de agent met de master kunnen communiceren of andersom.
 Puppet: "/etc/hosts"
 
 ```
@@ -59,6 +60,7 @@ Puppet: "/etc/hosts"
 192.168.137.104		puppet
 192.168.137.105		puppetLamp	puppetclient
 192.168.137.106		puppetDns	puppetclient
+192.168.137.107		puppetDatabase	puppetclient
 ```
 
 Vervolgens passen we de file **"/etc/resolvconf/resolv.conf.d/base"** aan. We doen dit door zoals hieronder aangeven. Vervang het adres door jouw dns-server. 
@@ -74,7 +76,7 @@ Je kan dit testen met een nslookup. Jouw dns-server zou dan tevoorschijn moeten 
 
 Nu gaan we een forward lookup zone configureren met bind9. Hiervoor configureren we volgende bestanden.
 **"/etc/bind/named.conf.local"**
-Je kan voorbeeld inhoud van deze file bovenaan ook vinden.
+Je kan voorbeeld inhoud van deze file bovenaan vinden.
 
 ```
 ;
@@ -92,6 +94,7 @@ $TTL    604800
         IN      A       192.168.137.106
         IN      AAAA    ::1
 ; name servers - A records
+puppetDatabase.projecthosting.	IN		A		192.168.137.107
 puppetdns.projecthosting.       IN      A       192.168.137.106
 puppetlamp.projecthosting.      IN      A       192.168.137.105
 puppet.projecthosting.          IN      A       192.168.137.104
@@ -131,9 +134,7 @@ We gaan hiervoor naar de PuppetLabs repository rpm en installeren deze repositor
 Dit doen we als volgt: Ik heb dit op elke machine uitgevoerd. 
 
 **wget https://apt.puppetlabs.com/puppetlabs-release-pc1-xenial.deb**
-
 **sudo dpkg -i puppetlabs-release-pc1-xenial.deb**
-
 **sudo apt-get update**
 
 ### Puppet master
@@ -250,6 +251,7 @@ Vervolgens gaan we onze eigen module maken. Het scheve 'lamp' is de naam van je 
 **sudo mkdir -p /etc/puppetlabs/code/environments/production/modules/_lamp_/manifests**
 **sudo mkdir -p /etc/puppetlabs/code/environments/production/modules/_users_/manifests**
 **sudo mkdir -p /etc/puppetlabs/code/environments/production/modules/_osticket_/manifests**
+**sudo mkdir -p /etc/puppetlabs/code/environments/production/modules/_database_/manifests**
 
 Vervolgens ga je in het onderstaande bestand het volgende invullen. Het moet 'init.pp' noemen! 
 Pas op met het kopiëren van hieronder! Linux kan hier problemen mee krijgen (spaties/tabs)! 
@@ -260,122 +262,166 @@ Je zal merken dat erin dit manifest verwezen wordt naar bepaalde "template" best
 
 ```
 class lamp { 
-#execute 'apt-get update' 
-	exec { 'apt-update' : 
-	command => '/usr/bin/apt-get update', 
-	before => Package['apache2'],
-} 
-
-#install apache2 package 
-package { 'apache2' : 
-	ensure => latest, 
-} 
-
-#ensure apache2 service is running 
-service { 'apache2' : 
-	ensure => running, 
-	require => Package['apache2'], 
-} 
-
-# install php7 package 
-package { 'php7.0' : 
-	ensure => latest, 
-} 
-
-package { 'libapache2-mod-php7.0' :  
-	ensure => latest, 
-} 
-
-# ensure info.php file exists 
-file { '/var/www/html/info.php': 
-	ensure => file, 
-	content => '<?php phpinfo(); ?>', 
-	require => Package['apache2'], 
-} 
-
-# custom apache2 config 
-exec { 'a2enmod userdir' : 
-	command => '/usr/sbin/a2enmod userdir', 
-} 
-
-exec { 'apache2 reload' : 
-	command => '/usr/sbin/service apache2 reload', 
-} 
-
-file { '/etc/apache2/mods-enabled/php7.0.conf': 
-	notify  => Service['apache2'], 
-	owner   => 'root', 
-	group   => 'root', 
-	require => Package['apache2'], 
-	content => template('/srv/puppet/files/php7.0.conf'), 
-} 
-
-exec { 'apache2 reload 2' : 
-	command => '/usr/sbin/service apache2 reload', 
-} 
-
-# install phpmyadmin 
-package { 'phpmyadmin' : 
-	ensure => latest, 
-} 
-  
-package { 'php-mbstring' : 
-	ensure => latest, 
-} 
-  
-package { 'php-gettext' : 
-	ensure => latest, 
-} 
-
-# Comment volgende exec uit van zodra het 1 keer is uitgevoerd en phpmyadmin werkende is! 
-exec { 'apache2 phpmyadmin' : 
-	command => '/bin/ln -s /etc/phpmyadmin/apache.conf /etc/apache2/conf-available/phpmyadmin.conf', 
-} 
-
-exec { 'apache2 phpmyadmin 2' : 
-	command => '/usr/sbin/a2enconf phpmyadmin.conf', 
-} 
-
-exec { 'apache2 phpmyadmin reload' : 
-	command => '/usr/sbin/service apache2 reload', 
-} 
-
-# install vsftpd and configure 
-package { 'vsftpd' : 
-	ensure => latest, 
-} 
-
-#ensure vsftpd service is running 
-service { 'vsftpd' : 
-	ensure => running, 
-	require => Package['vsftpd'], 
-} 
-
-#execute 'apt-get update' 
-exec { 'apt-update 2' : 
-	command => '/usr/bin/apt-get update', 
-} 
-
-file { '/etc/vsftpd.conf': 
-	notify  => Service['vsftpd'], 
-	owner   => 'root', 
-	group   => 'root', 
-	require => Package['vsftpd'], 
-	content => template('/srv/puppet/files/vsftpd.conf'), 
-} 
-
-file { '/etc/vsftpd.chroot_list': 
-	notify  => Service['vsftpd'], 
-	owner   => 'root', 
-	group   => 'root', 
-	require => Package['vsftpd'], 
-	content => template('/srv/puppet/files/vsftpd.chroot_list'), 
-}
+	#execute 'apt-get update' 
+		exec { 'apt-update' : 
+		command => '/usr/bin/apt-get update', 
+		before => Package['apache2'],
+	} 
+	
+	#execute 'apt-get upgrade'
+		exec { 'apt-upgrade' :
+		command => '/usr/bin/apt-get upgrade -y',
+	}
+	
+	#install apache2 package 
+	package { 'apache2' : 
+		ensure => latest, 
+	} 
+	
+	#ensure apache2 service is running 
+	service { 'apache2' : 
+		ensure => running, 
+		require => Package['apache2'], 
+	} 
+	
+	# install php7 package 
+	package { 'php7.0' : 
+		ensure => latest, 
+	} 
+	
+	package { 'libapache2-mod-php7.0' :  
+		ensure => latest, 
+	} 
+	
+	# ensure info.php file exists 
+	file { '/var/www/html/info.php': 
+		ensure => file, 
+		content => '<?php phpinfo(); ?>', 
+		require => Package['apache2'], 
+	} 
+	
+	# custom apache2 config 
+	exec { 'a2enmod userdir' : 
+		command => '/usr/sbin/a2enmod userdir', 
+	} 
+	
+	exec { 'apache2 reload' : 
+		command => '/usr/sbin/service apache2 reload', 
+	} 
+	
+	file { '/etc/apache2/mods-enabled/php7.0.conf': 
+		notify  => Service['apache2'], 
+		owner   => 'root', 
+		group   => 'root', 
+		require => Package['apache2'], 
+		content => template('/srv/puppet/files/php7.0.conf'), 
+	} 
+	
+	exec { 'apache2 reload 2' : 
+		command => '/usr/sbin/service apache2 reload', 
+	}
+	
+	# install vsftpd and configure 
+	package { 'vsftpd' : 
+		ensure => latest, 
+	} 
+	
+	#ensure vsftpd service is running 
+	service { 'vsftpd' : 
+		ensure => running, 
+		require => Package['vsftpd'], 
+	} 
+	
+	#execute 'apt-get update' 
+	exec { 'apt-update 2' : 
+		command => '/usr/bin/apt-get update', 
+	} 
+	
+	file { '/etc/vsftpd.conf': 
+		notify  => Service['vsftpd'], 
+		owner   => 'root', 
+		group   => 'root', 
+		require => Package['vsftpd'], 
+		content => template('/srv/puppet/files/vsftpd.conf'), 
+	} 
+	
+	file { '/etc/vsftpd.chroot_list': 
+		notify  => Service['vsftpd'], 
+		owner   => 'root', 
+		group   => 'root', 
+		require => Package['vsftpd'], 
+		content => template('/srv/puppet/files/vsftpd.chroot_list'), 
+	}
 } 
 ```
 
-Voeg ook onderstaand manifest toe. Dit doet al wat van instellingen voor osTicket.
+Hieronder het manifest voor de puppetDatabase node.
+```
+class database {
+	#execute 'apt-get update' 
+		exec { 'apt-update' : 
+		command => '/usr/bin/apt-get update', 
+		before => Package['apache2'],
+	} 
+	
+	#execute 'apt-get upgrade'
+		exec { 'apt-upgrade' :
+		command => '/usr/bin/apt-get upgrade -y',
+	}
 
+	#install apache2 package 
+	package { 'apache2' : 
+		ensure => latest, 
+	} 
+	
+	#ensure apache2 service is running 
+	service { 'apache2' : 
+		ensure => running, 
+		require => Package['apache2'], 
+	} 
+	
+	# install php7 package 
+	package { 'php7.0' : 
+		ensure => latest, 
+	} 
+	
+	package { 'libapache2-mod-php7.0' :  
+		ensure => latest, 
+	} 
+	
+	exec { 'apache2 reload' : 
+		command => '/usr/sbin/service apache2 reload', 
+	} 
+	
+	# install phpmyadmin 
+	package { 'phpmyadmin' : 
+		ensure => latest, 
+	} 
+	
+	package { 'php-mbstring' : 
+		ensure => latest, 
+	} 
+	
+	package { 'php-gettext' : 
+		ensure => latest, 
+	} 
+	
+	# Comment volgende exec uit van zodra het 1 keer is uitgevoerd en phpmyadmin werkende is! 
+	exec { 'apache2 phpmyadmin' : 
+		command => '/bin/ln -s /etc/phpmyadmin/apache.conf /etc/apache2/conf-available/phpmyadmin.conf', 
+	} 
+	
+	exec { 'apache2 phpmyadmin 2' : 
+		command => '/usr/sbin/a2enconf phpmyadmin.conf', 
+	} 
+	
+	exec { 'apache2 phpmyadmin reload' : 
+		command => '/usr/sbin/service apache2 reload', 
+	} 
+}
+```
+
+Hieronder een manifest om osticket op puppetlamp al vast deels te configureren.
 ```
 class osticket {	
 	file { '/etc/php/7.0/fpm/php.ini':
@@ -403,7 +449,8 @@ class osticket {
 
 Via onderstaand scriptje kan je op basis van een inputfile met users en wachtwoorden gescheiden door komma's, 
 de systeem- en mysquser structuren voor puppet aanmaken. 
-Zie hieronder voor voorbeeld structuur voor inputfile.
+Zie hieronder voor voorbeeld structuur voor inputfile. Waar het ip-adres '192.168.137.105' staat vervang dit door het ip-adres van de server waar de files worden geupload.
+Voor het python bestand met commando **"python3 file.py"**.
 
 **bobby;P@ssw0rd**
 
@@ -452,9 +499,9 @@ for line in file:
 
 	# now we will generate the mysql user txt file to use
 	mysql_hash = "*" + sha1(sha1(field2pass.encode("utf-8")).digest()).hexdigest()
-	mysqluser += "\n\t\t\t\"{}@localhost\" => {{\n\t\t\t\tensure => \"present\",\n\t\t\t\tmax_connections_per_hour => \"0\",\n\t\t\t\tmax_user_connections => \"0\",\n\t\t\t\tpassword_hash => \"{}\",\n\t\t\t}},\n".format(field1name, mysql_hash)
+	mysqluser += "\n\t\t\t\"{}@192.168.137.105\" => {{\n\t\t\t\tensure => \"present\",\n\t\t\t\tmax_connections_per_hour => \"0\",\n\t\t\t\tmax_user_connections => \"0\",\n\t\t\t\tpassword_hash => \"{}\",\n\t\t\t}},\n".format(field1name, mysql_hash)
 	mysqldatabase += "\n\t\t\t\"{}\" => {{\n\t\t\t\tensure => \"present\",\n\t\t\t\tcharset => \"utf8\",\n\t\t\t}},\n".format(field1name)
-	mysqlgrants += "\n\t\t\t\"{}@localhost/{}.*\" => {{\n\t\t\t\tensure => \"present\",\n\t\t\t\toptions => [\"GRANT\"],\n\t\t\t\tprivileges => [\"ALL\"],\n\t\t\t\ttable => \"{}.*\",\n\t\t\t\tuser => \"{}@localhost\",\n\t\t\t}},".format(field1name, field1name, field1name, field1name)
+	mysqlgrants += "\n\t\t\t\"{}@192.168.137.105/{}.*\" => {{\n\t\t\t\tensure => \"present\",\n\t\t\t\toptions => [\"GRANT\"],\n\t\t\t\tprivileges => [\"ALL\"],\n\t\t\t\ttable => \"{}.*\",\n\t\t\t\tuser => \"{}@192.168.137.105\",\n\t\t\t}},".format(field1name, field1name, field1name, field1name)
 
 # Close the structured output
 resultSystemUsers += "}"
@@ -491,16 +538,24 @@ Vervolgens verwijs je in het main manifest naar de correcte modules. Hierin kome
 
 **sudo nano /etc/puppetlabs/code/environments/production/manifests/site.pp**
 ```
-node default {}  
+node default {} 
 
-node 'puppetlamp' { 
-	include lamp 
+node 'puppetlamp' {
+	include lamp
 	include users
 	include osticket
+} 
+
+node 'puppetdatabase' {
+	include database
 
     class { '::mysql::server': 
         root_password    => 'r0668236',
-	remove_default_accounts	=> true,
+		remove_default_accounts => true,
+		override_options => {
+			mysqld => {bind-address => '192.168.137.107'}
+		},
+		
 		**Insert from this line**
 	}
 }
@@ -511,7 +566,7 @@ De "Insert from this line" lijn is vanaf waar het in te voegen.
 In nano kan je "ctrl + c" gebruiken om jee huidige positie te zien. Deze ga je voor de commando's hieronder moeten gebruiken. 
 Zorg ervoor dat je hierbij in de directory van de gegenereerde bestanden staat!
 
-Dit zal de eerste 10 regels van ons huidig site.pp bestand plaatsen in ons nieuw site.pp bestand. 
+Dit zal de eerste 10 regels van ons huidig (bovenstaand) site.pp bestand plaatsen in ons nieuw site.pp bestand. 
 **sudo head -n 10 /etc/puppetlabs/code/environments/production/manifests/site.pp > site.pp**
 
  
@@ -529,7 +584,7 @@ Nu moet men nog het oorspronkelijk bestand verwijderen en vervangen door ons nie
 Voeg nu nog onderstaande sql-gebruiker toe in het hoofdmanifest site.pp.
 ```
 Onder Users:
-"osticket@localhost" => {
+"osticket@192.168.137.105" => {
 				ensure => "present",
 				max_connections_per_hour => "0",
 				max_user_connections => "0",
@@ -543,12 +598,12 @@ Onder Database:
 			},
 
 Onder Grants:
-"osticket@localhost/osticket.*" => {
+"osticket@192.168.137.105/osticket.*" => {
 				ensure => "present",
 				options => ["GRANT"],
 				privileges => ["ALL"],
 				table => "osticket.*",
-				user => "osticket@localhost",
+				user => "osticket@192.168.137.105",
 			},
 ```
 
