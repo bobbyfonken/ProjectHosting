@@ -645,6 +645,8 @@ Volg de installatie instructies aandachtig. Na installatie verwijder je nog de s
 **sudo chmod 0644 /var/www/html/osticket/include/ost-config.php**
 
 Nu zou osTicket werkende moeten zijn!
+Het admin panel kan men normaal hier vinden: **"http://your-domain.com/osticket/upload/scp/settings.php"**.
+Een nieuw ticket openen doet men via deze link: **"http://your-domain.com/osticket/upload/"**.
 
 # Conclusie
 Als alles goed verlopen is, kan je nu via **"http://ip_adres/~username"** zien dat je lamp-stack werkt na toevoegen van een bestand! 
