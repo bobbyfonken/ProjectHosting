@@ -540,6 +540,43 @@ Vervolgens verwijs je in het main manifest naar de correcte modules. Hierin kome
 ```
 node default {} 
 
+node 'puppet' {
+        ssh_authorized_key { 'bobbix@puppet':
+                ensure          => present,
+                user            => 'bobbix',
+                type            => 'ssh-rsa',
+                key             => 'Public key here'
+        }
+
+        user { 'bobbix':
+                ensure          => present,
+                password        => pw_hash("r0668236", "SHA-256", "mysalt"),
+                shell           => "/bin/bash",
+                home            => "/home/bobbix",
+                managehome      => true,
+                purge_ssh_keys  => true,
+        }
+}
+
+node 'puppetdns' {
+        ssh_authorized_key { 'bobbix@puppetdns':
+                ensure          => present,
+                user            => 'bobbix',
+                type            => 'ssh-rsa',
+                key             => 'Public key here'
+        }
+
+        user { 'bobbix':
+                ensure          => present,
+                password        => pw_hash("r0668236", "SHA-256", "mysalt"),
+                shell           => "/bin/bash",
+                home            => "/home/bobbix",
+                managehome      => true,
+                purge_ssh_keys  => true,
+        }
+
+}
+
 node 'puppetlamp' {
 	include lamp
 	include users
