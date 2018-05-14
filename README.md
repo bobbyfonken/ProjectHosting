@@ -534,7 +534,7 @@ De inhoud van file "systemusers-done.pp" kopieer je naar "/etc/puppetlabs/code/e
 **sudo cp ~/systemusers-done.pp /etc/puppetlabs/code/environments/production/modules/users/manifests/init.pp**
 
 Vervolgens verwijs je in het main manifest naar de correcte modules. Hierin komen volgende regels voor. 
-("Insert from this line" zal hieronder worden uitgelegd. Dit is voor de mysql users) 
+("Insert from this line" zal hieronder worden uitgelegd. Dit is voor de mysql users en  "Public key here" is voor ssh-rsa (Deze zijn hier gezet zodat je er verschillende gebruikt per node!)) 
 
 **sudo nano /etc/puppetlabs/code/environments/production/manifests/site.pp**
 ```
@@ -544,10 +544,42 @@ node 'puppetlamp' {
 	include lamp
 	include users
 	include osticket
+	
+	ssh_authorized_key { 'bobbix@puppetlamp':
+		ensure          => present,
+		user            => 'bobbix',
+		type            => 'ssh-rsa',
+		key             => 'Public key here'
+	}
+
+	user { 'bobbix':
+		ensure          => present,
+		password        => pw_hash("r0668236", "SHA-256", "mysalt"),
+		shell           => "/bin/bash",
+		home            => "/home/bobbix",
+		managehome      => true,
+		purge_ssh_keys  => true,
+	}
 } 
 
 node 'puppetdatabase' {
 	include database
+	
+	ssh_authorized_key { 'bobbix@puppetlamp':
+		ensure          => present,
+		user            => 'bobbix',
+		type            => 'ssh-rsa',
+		key             => 'Public key here'
+	}
+
+	user { 'bobbix':
+		ensure          => present,
+		password        => pw_hash("r0668236", "SHA-256", "mysalt"),
+		shell           => "/bin/bash",
+		home            => "/home/bobbix",
+		managehome      => true,
+		purge_ssh_keys  => true,
+	}
 
     class { '::mysql::server': 
         root_password    => 'r0668236',
