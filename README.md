@@ -252,6 +252,7 @@ Vervolgens gaan we onze eigen module maken. Het scheve 'lamp' is de naam van je 
 **sudo mkdir -p /etc/puppetlabs/code/environments/production/modules/_users_/manifests**
 **sudo mkdir -p /etc/puppetlabs/code/environments/production/modules/_osticket_/manifests**
 **sudo mkdir -p /etc/puppetlabs/code/environments/production/modules/_database_/manifests**
+**sudo mkdir -p /etc/puppetlabs/code/environments/production/modules/_sshd_/manifests**
 
 Vervolgens ga je in het onderstaande bestand het volgende invullen. Het moet 'init.pp' noemen! 
 Pas op met het kopiëren van hieronder! Linux kan hier problemen mee krijgen (spaties/tabs)! 
@@ -355,95 +356,7 @@ class lamp {
 } 
 ```
 
-Hieronder het manifest voor de puppetDatabase node.
-```
-class database {
-	#execute 'apt-get update' 
-		exec { 'apt-update' : 
-		command => '/usr/bin/apt-get update', 
-		before => Package['apache2'],
-	} 
-	
-	#execute 'apt-get upgrade'
-		exec { 'apt-upgrade' :
-		command => '/usr/bin/apt-get upgrade -y',
-	}
-
-	#install apache2 package 
-	package { 'apache2' : 
-		ensure => latest, 
-	} 
-	
-	#ensure apache2 service is running 
-	service { 'apache2' : 
-		ensure => running, 
-		require => Package['apache2'], 
-	} 
-	
-	# install php7 package 
-	package { 'php7.0' : 
-		ensure => latest, 
-	} 
-	
-	package { 'libapache2-mod-php7.0' :  
-		ensure => latest, 
-	} 
-	
-	exec { 'apache2 reload' : 
-		command => '/usr/sbin/service apache2 reload', 
-	} 
-	
-	# install phpmyadmin 
-	package { 'phpmyadmin' : 
-		ensure => latest, 
-	} 
-	
-	package { 'php-mbstring' : 
-		ensure => latest, 
-	} 
-	
-	package { 'php-gettext' : 
-		ensure => latest, 
-	} 
-	
-	# Comment volgende exec uit van zodra het 1 keer is uitgevoerd en phpmyadmin werkende is! 
-	exec { 'apache2 phpmyadmin' : 
-		command => '/bin/ln -s /etc/phpmyadmin/apache.conf /etc/apache2/conf-available/phpmyadmin.conf', 
-	} 
-	
-	exec { 'apache2 phpmyadmin 2' : 
-		command => '/usr/sbin/a2enconf phpmyadmin.conf', 
-	} 
-	
-	exec { 'apache2 phpmyadmin reload' : 
-		command => '/usr/sbin/service apache2 reload', 
-	} 
-}
-```
-
-Hieronder een manifest om osticket op puppetlamp al vast deels te configureren.
-```
-class osticket {	
-	file { '/etc/php/7.0/fpm/php.ini':
-        owner   => 'root',
-        group   => 'root',
-        content => template('/srv/puppet/files/php.ini'),
-	}
-
-	# reload php7.0-fpm
-	exec { 'php7 reload' :
-		command => '/usr/sbin/service php7.0-fpm reload',
-	}
-	
-	# Make directory for osticket
-	file { '/var/www/html/osticket':
-		ensure => 'directory',
-		owner  => 'www-data',
-		group  => 'www-data',
-		mode   => '0755',
-	}
-}
-```
+Andere manifesten van de verschillende modules vind je hierboven terug in de template folder.
 
 ### Generating system users and mysql users with Python3 
 
@@ -541,6 +454,8 @@ Vervolgens verwijs je in het main manifest naar de correcte modules. Hierin kome
 node default {} 
 
 node 'puppet' {
+	include sshd
+	
         ssh_authorized_key { 'bobbix@puppet':
                 ensure          => present,
                 user            => 'bobbix',
@@ -559,6 +474,8 @@ node 'puppet' {
 }
 
 node 'puppetdns' {
+	include sshd
+	
         ssh_authorized_key { 'bobbix@puppetdns':
                 ensure          => present,
                 user            => 'bobbix',
@@ -578,6 +495,7 @@ node 'puppetdns' {
 }
 
 node 'puppetlamp' {
+	include sshd
 	include lamp
 	include users
 	include osticket
@@ -600,6 +518,7 @@ node 'puppetlamp' {
 } 
 
 node 'puppetdatabase' {
+	include sshd
 	include database
 	
 	ssh_authorized_key { 'bobbix@puppetlamp':
