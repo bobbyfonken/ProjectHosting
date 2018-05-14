@@ -545,7 +545,7 @@ node 'puppet' {
                 ensure          => present,
                 user            => 'bobbix',
                 type            => 'ssh-rsa',
-                key             => 'Public key here'
+                key             => 'Public key here',
         }
 
         user { 'bobbix':
@@ -563,7 +563,7 @@ node 'puppetdns' {
                 ensure          => present,
                 user            => 'bobbix',
                 type            => 'ssh-rsa',
-                key             => 'Public key here'
+                key             => 'Public key here',
         }
 
         user { 'bobbix':
@@ -586,7 +586,7 @@ node 'puppetlamp' {
 		ensure          => present,
 		user            => 'bobbix',
 		type            => 'ssh-rsa',
-		key             => 'Public key here'
+		key             => 'Public key here',
 	}
 
 	user { 'bobbix':
@@ -606,7 +606,7 @@ node 'puppetdatabase' {
 		ensure          => present,
 		user            => 'bobbix',
 		type            => 'ssh-rsa',
-		key             => 'Public key here'
+		key             => 'Public key here',
 	}
 
 	user { 'bobbix':
