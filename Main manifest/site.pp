@@ -3,7 +3,7 @@ node default {}
 node 'puppet' {
         include sshd
 
-	class {'sshrsa_user':
+	class {'sshd::user':
 		user    => 'Bobbix',
 		key     => 'Public key here',
 		pass    => 'r0668236',
@@ -15,7 +15,7 @@ node 'puppet' {
 node 'puppetdns' {
         include sshd
 
-	class {'sshrsa_user':
+	class {'sshd::user':
 		user    => 'Bobbix',
 		key     => 'Public key here',
 		pass    => 'r0668236',
@@ -31,7 +31,7 @@ node 'puppetlamp' {
 	include users
 	include osticket
 	
-	class {'sshrsa_user':
+	class {'sshd::user':
 		user    => 'Bobbix',
 		key     => 'Public key here',
 		pass    => 'r0668236',
@@ -44,7 +44,7 @@ node 'puppetdatabase' {
 	include sshd
 	include database
 	
-	class {'sshrsa_user':
+	class {'sshd::user':
 		user    => 'Bobbix',
 		key     => 'Public key here',
 		pass    => 'r0668236',
