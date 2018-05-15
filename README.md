@@ -241,11 +241,11 @@ Nu gaan we een lamp-stack installeren doormiddel van puppet. We maken eerst op d
 
 **/etc/puppetlabs/code/environments/production/modules**
 
-De mappenstructuur hierin wordt in de directory **"modules"** uitgelegd.
+De mappenstructuur hierin wordt in de directory **"modules"** uitgelegd. Bekijk dit eerst!
 
 ### Generating system users and mysql users with Python3 
 
-Via onderstaand scriptje "gen-users sql-shell.py", kan je op basis van een inputfile met users en wachtwoorden gescheiden door komma's, 
+Via het scriptje "gen-users sql-shell.py", kan je op basis van een inputfile met users en wachtwoorden gescheiden door komma's, 
 de systeem- en mysquser structuren voor puppet aanmaken. 
 Zie hieronder voor voorbeeld structuur voor inputfile. 
 In de python file waar het ip-adres '192.168.137.105' staat, vervang dit door het ip-adres van de server waar de files worden geupload.
@@ -262,28 +262,28 @@ De inhoud van file "systemusers-done.pp" kopieer je naar "/etc/puppetlabs/code/e
 
 **sudo cp ~/systemusers-done.pp /etc/puppetlabs/code/environments/production/modules/users/manifests/init.pp**
 
-Vervolgens verwijs je in het main manifest naar de correcte modules. Hierin komen volgende regels voor. 
-("Insert from this line" zal hieronder worden uitgelegd. Dit is voor de mysql users en  "Public key here" is voor ssh-rsa (Deze zijn hier gezet zodat je er verschillende gebruikt per node!)) 
+Vervolgens verwijs je in het manifest puppetdatabase.pp naar de correcte modules. Hierin komen volgende regel voor:
+"Insert from this line". Dit is de lijn waar men de mysql users moet zetten.
 
-**sudo nano /etc/puppetlabs/code/environments/production/manifests/site.pp**
+**sudo nano /etc/puppetlabs/code/environments/production/manifests/puppetdatabase.pp**
 
-Om de mysqlusers toe te voegen zal je het genereerde bestand moeten toevoegen aan puppetdatabase.pp van het hoofdmanifest bestand. 
+Om de mysqlusers toe te voegen zal je het genereerde bestand moeten toevoegen aan puppetdatabase.pp manifest bestand. 
 De "Insert from this line" lijn is vanaf waar het in te voegen. 
 In nano kan je "ctrl + c" gebruiken om jee huidige positie te zien. Deze ga je voor de commando's hieronder moeten gebruiken. 
 Zorg ervoor dat je hierbij in de directory van de gegenereerde bestanden staat!
 
 Dit zal de eerste 10 regels van ons huidig (bovenstaand) site.pp bestand plaatsen in ons nieuw puppetdatabase.pp bestand. 
-**sudo head -n 10 /etc/puppetlabs/code/environments/production/manifests/site.pp > site.pp**
+**sudo head -n 10 /etc/puppetlabs/code/environments/production/manifests/puppetdatabase.pp > puppetdatabase.pp**
  
 Dit zal de inhoud van ons genereerd bestand plaatsen in ons nieuw site.pp bestand. 
-**sudo cat mysqlusers-done.pp >> site.pp**
+**sudo cat mysqlusers-done.pp >> puppetdatabase.pp**
 
 Dit zal de regels na regel 10 van ons oorspronkelijk bestand naar ons nieuw site.pp bestand. 
-**sudo tail --lines=+10 /etc/puppetlabs/code/environments/production/manifests/site.pp >> site.pp**
+**sudo tail --lines=+10 /etc/puppetlabs/code/environments/production/manifests/puppetdatabase.pp >> puppetdatabase.pp**
 
 Nu moet men nog het oorspronkelijk bestand verwijderen en vervangen door ons nieuw bestand. 
-**sudo rm /etc/puppetlabs/code/environments/production/manifests/site.pp**
-**sudo cp site.pp /etc/puppetlabs/code/environments/production/manifests/site.pp**
+**sudo rm /etc/puppetlabs/code/environments/production/manifests/puppetdatabase.pp**
+**sudo cp puppetdatabase.pp /etc/puppetlabs/code/environments/production/manifests/puppetdatabase.pp**
 
 Voeg nu nog onderstaande sql-gebruiker toe in het manifest puppetdatabase.pp.
 ```
