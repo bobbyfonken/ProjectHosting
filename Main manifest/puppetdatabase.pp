@@ -3,7 +3,7 @@ node 'puppetdatabase' {
 	include database
 	
 	class {'sshd::user':
-		user    => 'Bobbix',
+		user    => 'bobbix',
 		key     => 'Public key here',
 		pass    => 'r0668236',
 		salt    => 'mysalt',
