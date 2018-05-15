@@ -67,7 +67,6 @@ node 'puppetlamp' {
 node 'puppetdatabase' {
 	include sshd
 	include database
-	include ::mysql::server
 	
 	ssh_authorized_key { 'bobbix@puppetlamp':
 		ensure          => present,
