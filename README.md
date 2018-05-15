@@ -241,201 +241,17 @@ Nu gaan we een lamp-stack installeren doormiddel van puppet. We maken eerst op d
 
 **/etc/puppetlabs/code/environments/production/modules**
 
-We zullen eerst het volgende commando uitvoeren om met puppet mysql te kunnen installeren. 
-
-**sudo /opt/puppetlabs/bin/puppet module install puppetlabs-mysql**
-
-Vervolgens gaan we onze eigen module maken. Het scheve 'lamp' is de naam van je module. Deze moeten overeenkomen! Dit wordt gevolgd door de map "manifests", met daarna een bestand "init.pp". 
-
-**cd /etc/puppetlabs/code/environments/production/modules**
-**sudo mkdir -p /etc/puppetlabs/code/environments/production/modules/_lamp_/manifests**
-**sudo mkdir -p /etc/puppetlabs/code/environments/production/modules/_users_/manifests**
-**sudo mkdir -p /etc/puppetlabs/code/environments/production/modules/_osticket_/manifests**
-**sudo mkdir -p /etc/puppetlabs/code/environments/production/modules/_database_/manifests**
-**sudo mkdir -p /etc/puppetlabs/code/environments/production/modules/_sshd_/manifests**
-
-Vervolgens ga je in het onderstaande bestand het volgende invullen. Het moet 'init.pp' noemen! 
-Pas op met het kopiëren van hieronder! Linux kan hier problemen mee krijgen (spaties/tabs)! 
-
-**sudo nano /etc/puppetlabs/code/environments/production/modules/lamp/manifests/init.pp**
-
-Je zal merken dat erin dit manifest verwezen wordt naar bepaalde "template" bestanden. Zorg dat deze aanwezig zijn (deze zijn in het scheef aangeduid).
-
-```
-class lamp { 
-	#execute 'apt-get update' 
-		exec { 'apt-update' : 
-		command => '/usr/bin/apt-get update', 
-		before => Package['apache2'],
-	} 
-	
-	#execute 'apt-get upgrade'
-		exec { 'apt-upgrade' :
-		command => '/usr/bin/apt-get upgrade -y',
-	}
-	
-	#install apache2 package 
-	package { 'apache2' : 
-		ensure => latest, 
-	} 
-	
-	#ensure apache2 service is running 
-	service { 'apache2' : 
-		ensure => running, 
-		require => Package['apache2'], 
-	} 
-	
-	# install php7 package 
-	package { 'php7.0' : 
-		ensure => latest, 
-	} 
-	
-	package { 'libapache2-mod-php7.0' :  
-		ensure => latest, 
-	} 
-	
-	# ensure info.php file exists 
-	file { '/var/www/html/info.php': 
-		ensure => file, 
-		content => '<?php phpinfo(); ?>', 
-		require => Package['apache2'], 
-	} 
-	
-	# custom apache2 config 
-	exec { 'a2enmod userdir' : 
-		command => '/usr/sbin/a2enmod userdir', 
-	} 
-	
-	exec { 'apache2 reload' : 
-		command => '/usr/sbin/service apache2 reload', 
-	} 
-	
-	file { '/etc/apache2/mods-enabled/php7.0.conf': 
-		notify  => Service['apache2'], 
-		owner   => 'root', 
-		group   => 'root', 
-		require => Package['apache2'], 
-		content => template('/srv/puppet/files/php7.0.conf'), 
-	} 
-	
-	exec { 'apache2 reload 2' : 
-		command => '/usr/sbin/service apache2 reload', 
-	}
-	
-	# install vsftpd and configure 
-	package { 'vsftpd' : 
-		ensure => latest, 
-	} 
-	
-	#ensure vsftpd service is running 
-	service { 'vsftpd' : 
-		ensure => running, 
-		require => Package['vsftpd'], 
-	} 
-	
-	#execute 'apt-get update' 
-	exec { 'apt-update 2' : 
-		command => '/usr/bin/apt-get update', 
-	} 
-	
-	file { '/etc/vsftpd.conf': 
-		notify  => Service['vsftpd'], 
-		owner   => 'root', 
-		group   => 'root', 
-		require => Package['vsftpd'], 
-		content => template('/srv/puppet/files/vsftpd.conf'), 
-	} 
-	
-	file { '/etc/vsftpd.chroot_list': 
-		notify  => Service['vsftpd'], 
-		owner   => 'root', 
-		group   => 'root', 
-		require => Package['vsftpd'], 
-		content => template('/srv/puppet/files/vsftpd.chroot_list'), 
-	}
-} 
-```
-
-Andere manifesten van de verschillende modules vind je hierboven terug in de template folder.
+De mappenstructuur hierin wordt in de directory **"modules"** uitgelegd.
 
 ### Generating system users and mysql users with Python3 
 
-Via onderstaand scriptje kan je op basis van een inputfile met users en wachtwoorden gescheiden door komma's, 
+Via onderstaand scriptje "gen-users sql-shell.py", kan je op basis van een inputfile met users en wachtwoorden gescheiden door komma's, 
 de systeem- en mysquser structuren voor puppet aanmaken. 
-Zie hieronder voor voorbeeld structuur voor inputfile. Waar het ip-adres '192.168.137.105' staat vervang dit door het ip-adres van de server waar de files worden geupload.
-Voor het python bestand met commando **"python3 file.py"**.
+Zie hieronder voor voorbeeld structuur voor inputfile. 
+In de python file waar het ip-adres '192.168.137.105' staat, vervang dit door het ip-adres van de server waar de files worden geupload.
+Voer het python bestand uit met commando **"python3 file.py"**.
 
 **bobby;P@ssw0rd**
-
-```
-# import neccesary modules
-from hashlib import sha1
-import sys, os
-
-#### Variabels
-# filenames of the inputfile and outputfile
-inputFile = "users-Unstructered.csv"
-outputFileSystemUsers = "systemusers-done.pp"
-outputFileMYsqlUsers = "mysqlusers-done.pp"
-
-#Begin of the uids on the lamp-stack system
-uid = 1001
-
-# These are used to store the output for the files
-resultSystemUsers = ""
-resultMYsqlUsers = ""
-mysqluser = ""
-mysqldatabase = ""
-mysqlgrants = ""
-
-# Open the inputfile
-file = open(inputFile, "r")
-
-# begin the structured output for the files
-resultSystemUsers += "class users {\n"
-mysqluser += "\t\tusers => {"
-mysqldatabase += "\t\tdatabases => {"
-mysqlgrants += "\t\tgrants => {"
-
-# read every person with password
-for line in file:
-	fields = line.split(";")
-	field1 = fields[0]
-	field2 = fields[1]
-	# erase the witspaces and tabs
-	field1name = "".join(field1.split() )
-	field2pass = "".join(field2.split() )
-
-	# First we will generate the users of the system in a file
-	resultSystemUsers += "user {{ \"{}\":\n\tensure => present,\n\tpassword => pw_hash(\"{}\", \"SHA-256\", \"mysalt\"),\n\tuid => \"{}\",\n\tshell => \"/bin/bash\",\n\thome => \"/home/{}\",\n\tmanagehome => true,\n}}\n\n".format(field1name, field2pass, uid, field1name)
-	uid += 1
-
-	# now we will generate the mysql user txt file to use
-	mysql_hash = "*" + sha1(sha1(field2pass.encode("utf-8")).digest()).hexdigest()
-	mysqluser += "\n\t\t\t\"{}@192.168.137.105\" => {{\n\t\t\t\tensure => \"present\",\n\t\t\t\tmax_connections_per_hour => \"0\",\n\t\t\t\tmax_user_connections => \"0\",\n\t\t\t\tpassword_hash => \"{}\",\n\t\t\t}},\n".format(field1name, mysql_hash)
-	mysqldatabase += "\n\t\t\t\"{}\" => {{\n\t\t\t\tensure => \"present\",\n\t\t\t\tcharset => \"utf8\",\n\t\t\t}},\n".format(field1name)
-	mysqlgrants += "\n\t\t\t\"{}@192.168.137.105/{}.*\" => {{\n\t\t\t\tensure => \"present\",\n\t\t\t\toptions => [\"GRANT\"],\n\t\t\t\tprivileges => [\"ALL\"],\n\t\t\t\ttable => \"{}.*\",\n\t\t\t\tuser => \"{}@192.168.137.105\",\n\t\t\t}},".format(field1name, field1name, field1name, field1name)
-
-# Close the structured output
-resultSystemUsers += "}"
-resultMYsqlUsers += mysqluser + "\n\t\t},\n" + mysqldatabase + "\n\t\t},\n" + mysqlgrants + "\n\t\t},\n"
-
-# write the result for the systemusers to a file in the same directory as where the script runs
-fileResultSystemUsers = open(outputFileSystemUsers, "w")
-fileResultSystemUsers.write(resultSystemUsers)
-fileResultSystemUsers.close()
-
-# write the result for the mysqlusers to a file in the same directory as where the script runs
-fileResultMYsqlUsers = open(outputFileMYsqlUsers, "w")
-fileResultMYsqlUsers.write(resultMYsqlUsers)
-fileResultMYsqlUsers.close()
-
-# Close the inputfile
-file.close()
-
-# Print that the files have been generated
-print ("The file have been generated!")
-```
 
 Bovenaan kan men het nodige python bestand vinden.
 Doe dit in een aparte dirrectory!
@@ -450,117 +266,17 @@ Vervolgens verwijs je in het main manifest naar de correcte modules. Hierin kome
 ("Insert from this line" zal hieronder worden uitgelegd. Dit is voor de mysql users en  "Public key here" is voor ssh-rsa (Deze zijn hier gezet zodat je er verschillende gebruikt per node!)) 
 
 **sudo nano /etc/puppetlabs/code/environments/production/manifests/site.pp**
-```
-node default {} 
 
-node 'puppet' {
-	include sshd
-	
-        ssh_authorized_key { 'bobbix@puppet':
-                ensure          => present,
-                user            => 'bobbix',
-                type            => 'ssh-rsa',
-                key             => 'Public key here',
-        }
-
-        user { 'bobbix':
-                ensure          => present,
-                password        => pw_hash("r0668236", "SHA-256", "mysalt"),
-                shell           => "/bin/bash",
-                home            => "/home/bobbix",
-                managehome      => true,
-                purge_ssh_keys  => true,
-        }
-}
-
-node 'puppetdns' {
-	include sshd
-	
-        ssh_authorized_key { 'bobbix@puppetdns':
-                ensure          => present,
-                user            => 'bobbix',
-                type            => 'ssh-rsa',
-                key             => 'Public key here',
-        }
-
-        user { 'bobbix':
-                ensure          => present,
-                password        => pw_hash("r0668236", "SHA-256", "mysalt"),
-                shell           => "/bin/bash",
-                home            => "/home/bobbix",
-                managehome      => true,
-                purge_ssh_keys  => true,
-        }
-
-}
-
-node 'puppetlamp' {
-	include sshd
-	include lamp
-	include users
-	include osticket
-	
-	ssh_authorized_key { 'bobbix@puppetlamp':
-		ensure          => present,
-		user            => 'bobbix',
-		type            => 'ssh-rsa',
-		key             => 'Public key here',
-	}
-
-	user { 'bobbix':
-		ensure          => present,
-		password        => pw_hash("r0668236", "SHA-256", "mysalt"),
-		shell           => "/bin/bash",
-		home            => "/home/bobbix",
-		managehome      => true,
-		purge_ssh_keys  => true,
-	}
-} 
-
-node 'puppetdatabase' {
-	include sshd
-	include database
-	
-	ssh_authorized_key { 'bobbix@puppetlamp':
-		ensure          => present,
-		user            => 'bobbix',
-		type            => 'ssh-rsa',
-		key             => 'Public key here',
-	}
-
-	user { 'bobbix':
-		ensure          => present,
-		password        => pw_hash("r0668236", "SHA-256", "mysalt"),
-		shell           => "/bin/bash",
-		home            => "/home/bobbix",
-		managehome      => true,
-		purge_ssh_keys  => true,
-	}
-
-    class { '::mysql::server': 
-        root_password    => 'r0668236',
-		remove_default_accounts => true,
-		override_options => {
-			mysqld => {bind-address => '192.168.137.107'}
-		},
-		
-		**Insert from this line**
-	}
-}
-```
-
-Om de mysqlusers toe te voegen zal je het genereerde bestand moeten toevoegen aan site.pp van het hoofdmanifest bestand. 
+Om de mysqlusers toe te voegen zal je het genereerde bestand moeten toevoegen aan puppetdatabase.pp van het hoofdmanifest bestand. 
 De "Insert from this line" lijn is vanaf waar het in te voegen. 
 In nano kan je "ctrl + c" gebruiken om jee huidige positie te zien. Deze ga je voor de commando's hieronder moeten gebruiken. 
 Zorg ervoor dat je hierbij in de directory van de gegenereerde bestanden staat!
 
-Dit zal de eerste 10 regels van ons huidig (bovenstaand) site.pp bestand plaatsen in ons nieuw site.pp bestand. 
+Dit zal de eerste 10 regels van ons huidig (bovenstaand) site.pp bestand plaatsen in ons nieuw puppetdatabase.pp bestand. 
 **sudo head -n 10 /etc/puppetlabs/code/environments/production/manifests/site.pp > site.pp**
-
  
 Dit zal de inhoud van ons genereerd bestand plaatsen in ons nieuw site.pp bestand. 
 **sudo cat mysqlusers-done.pp >> site.pp**
-
 
 Dit zal de regels na regel 10 van ons oorspronkelijk bestand naar ons nieuw site.pp bestand. 
 **sudo tail --lines=+10 /etc/puppetlabs/code/environments/production/manifests/site.pp >> site.pp**
@@ -569,7 +285,7 @@ Nu moet men nog het oorspronkelijk bestand verwijderen en vervangen door ons nie
 **sudo rm /etc/puppetlabs/code/environments/production/manifests/site.pp**
 **sudo cp site.pp /etc/puppetlabs/code/environments/production/manifests/site.pp**
 
-Voeg nu nog onderstaande sql-gebruiker toe in het hoofdmanifest site.pp.
+Voeg nu nog onderstaande sql-gebruiker toe in het manifest puppetdatabase.pp.
 ```
 Onder Users:
 "osticket@192.168.137.105" => {
