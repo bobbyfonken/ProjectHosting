@@ -2,7 +2,7 @@
 
 Hierboven staan de verschillende modules die ik zelf heb gemaakt.
 
-We zullen eerst het volgende commando uitvoeren om met puppet mysql te kunnen installeren. 
+We zullen eerst het volgende commando uitvoeren om een puppet module toe te voegen, die ons toelaat om mysql te kunnen installeren en configureren met puppet. 
 
 **sudo /opt/puppetlabs/bin/puppet module install puppetlabs-mysql**
 
@@ -15,11 +15,12 @@ Vervolgens gaan we onze eigen module maken. Het scheve 'lamp' is de naam van je 
 **sudo mkdir -p /etc/puppetlabs/code/environments/production/modules/_database_/manifests**
 **sudo mkdir -p /etc/puppetlabs/code/environments/production/modules/_sshd_/manifests**
 
-Vervolgens ga je in het onderstaande bestand het volgende invullen. Het moet 'init.pp' noemen! 
-Pas op met het kopiëren van hieronder! Linux kan hier problemen mee krijgen (spaties/tabs)! 
+Vervolgens maak je onder de **"manifests"** map voor elke module een init.pp bestand en gebruik je de inhoud van bovenstaande modules.
+Pas op met het kopiëren! Linux kan hier problemen mee krijgen (spaties vs tabs)! 
 
 **sudo nano /etc/puppetlabs/code/environments/production/modules/lamp/manifests/init.pp**
 
-Je zal merken dat erin dit manifest verwezen wordt naar bepaalde "template" bestanden. Zorg dat deze aanwezig zijn! Bij mij staan ze op de puppet master onder **"/srv/puppet/files/"**.
+Je zal merken dat erin de manifesten verwezen wordt naar bepaalde "template" bestanden. Zorg dat deze aanwezig zijn! Bij mij staan ze op de puppet master onder **"/srv/puppet/files/"**.
 
 Andere manifesten van de verschillende modules vind je hierboven terug. Deze zijn op een gelijkaardige manier gemaakt.
+Let wel op bij de sshd module, deze heeft nog een tweede manifest. In het sshd module init.pp bestand staat de "class sshd". Het manifest users.pp heeft de "class sshd::users". Deze volgen op elkaar. De naam van het bestand is hetzelfde als de naam van de deelklassen: "class sshd::_users_".
