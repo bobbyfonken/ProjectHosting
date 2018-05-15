@@ -15,4 +15,15 @@ class sshd {
 		group   => 'root', 
 		content => template('/srv/puppet/files/sshd_config'), 
 	}
+	
+	#ensure ssh service is running
+	service { 'ssh' :
+	ensure => running,
+		require => Package['openssh-server'],
+	}
+
+	#Restart ssh service
+	exec { 'ssh reload' :
+		command => '/usr/sbin/service ssh reload',
+	}
 }
