@@ -89,12 +89,4 @@ class lamp {
 		require => Package['vsftpd'], 
 		content => template('/srv/puppet/files/vsftpd.chroot_list'), 
 	}
-	
-	# Make directory for vsftpd certificates and keys
-	file { '/etc/ssl/vsftpd':
-		ensure => 'directory',
-		owner  => 'root',
-		group  => 'ssl-cert',
-		mode   => '0710',
-	}
 } 
