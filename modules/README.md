@@ -2,9 +2,10 @@
 
 Hierboven staan de verschillende modules die ik zelf heb gemaakt.
 
-We zullen eerst het volgende commando uitvoeren om een puppet module toe te voegen, die ons toelaat om mysql te kunnen installeren en configureren met puppet. 
+We zullen eerst volgende commando's uitvoeren om puppet modules toe te voegen, die ons o.a. toelaat om mysql te kunnen installeren en configureren met puppet. 
 
 **sudo /opt/puppetlabs/bin/puppet module install puppetlabs-mysql**
+**sudo /opt/puppetlabs/bin/puppet module install dhoppe-fail2ban --version 1.3.5**
 
 Vervolgens gaan we onze eigen module maken. Het scheve 'lamp' is de naam van je module. Deze moeten overeenkomen! Dit wordt gevolgd door de map "manifests", met daarna een bestand "init.pp". 
 
