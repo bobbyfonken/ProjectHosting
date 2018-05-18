@@ -64,13 +64,6 @@ class lamp {
 		ensure => latest, 
 	} 
 	
-	file { '/etc/phpmyadmin/config-db.php': 
-		owner   => 'root', 
-		group   => 'www-data', 
-		require => Package['phpmyadmin'], 
-		content => template('/srv/puppet/files/config-db.php'), 
-	}
-	
 	# Comment volgende exec uit van zodra het 1 keer is uitgevoerd en phpmyadmin werkende is! 
 	exec { 'apache2 phpmyadmin' : 
 		command => '/bin/ln -s /etc/phpmyadmin/apache.conf /etc/apache2/conf-available/phpmyadmin.conf', 
