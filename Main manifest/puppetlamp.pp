@@ -16,4 +16,8 @@ node 'puppetlamp' {
 		salt    => 'mysalt',
 		ensure  => present,
 	}
+	
+	class { 'fail2ban':
+		config_file_template => "fail2ban/${::lsbdistcodename}/etc/fail2ban/jail.conf.erb",
+	}
 }
