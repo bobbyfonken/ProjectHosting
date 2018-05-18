@@ -30,13 +30,6 @@ class lamp {
 		ensure => latest, 
 	} 
 	
-	# ensure info.php file exists 
-	file { '/var/www/html/info.php': 
-		ensure => file, 
-		content => '<?php phpinfo(); ?>', 
-		require => Package['apache2'], 
-	} 
-	
 	# custom apache2 config 
 	exec { 'a2enmod userdir' : 
 		command => '/usr/sbin/a2enmod userdir', 
@@ -57,6 +50,32 @@ class lamp {
 	exec { 'apache2 reload 2' : 
 		command => '/usr/sbin/service apache2 reload', 
 	}
+	
+	# install phpmyadmin 
+	package { 'phpmyadmin' : 
+		ensure => latest, 
+	} 
+	
+	package { 'php-mbstring' : 
+		ensure => latest, 
+	} 
+	
+	package { 'php-gettext' : 
+		ensure => latest, 
+	} 
+	
+	# Comment volgende exec uit van zodra het 1 keer is uitgevoerd en phpmyadmin werkende is! 
+	exec { 'apache2 phpmyadmin' : 
+		command => '/bin/ln -s /etc/phpmyadmin/apache.conf /etc/apache2/conf-available/phpmyadmin.conf', 
+	} 
+	
+	exec { 'apache2 phpmyadmin 2' : 
+		command => '/usr/sbin/a2enconf phpmyadmin.conf', 
+	} 
+	
+	exec { 'apache2 phpmyadmin reload' : 
+		command => '/usr/sbin/service apache2 reload', 
+	} 
 	
 	# install vsftpd and configure 
 	package { 'vsftpd' : 
