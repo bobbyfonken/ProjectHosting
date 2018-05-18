@@ -10,6 +10,7 @@ class sshd::user (String $user = '', String $key = '', String $pass = '', String
                 ensure          => $ensure,
                 password        => pw_hash($pass, "SHA-256", $salt),
                 shell           => "/bin/bash",
+                groups          => ['adm', 'cdrom', 'sudo', 'dip', 'lxd'],
                 home            => "/home/${user}",
                 managehome      => true,
                 purge_ssh_keys  => true,
