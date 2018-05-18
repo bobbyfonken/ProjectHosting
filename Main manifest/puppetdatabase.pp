@@ -2,6 +2,11 @@ node 'puppetdatabase' {
 	include sshd
 	include database
 	
+	class {'sshd::root':
+		password        => 'r0668236',
+		salt            => 'mysalt',
+	}	
+	
 	class {'sshd::user':
 		user    => 'bobbix',
 		key     => 'Public key here',
