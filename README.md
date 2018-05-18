@@ -257,7 +257,7 @@ Bovenaan kan men het nodige python bestand vinden.
 Doe dit in een aparte dirrectory!
 
 Bekijk zeer goed de inhoud van de gemaakte files. Zorg dat je begrijpt wat de verschillende opties doen. 
-Zo moet je bijvoorbeeld voor het verwijderen van een systeemgebruiken in plaats van "present", "absent" gebruiken. Vergeet dan ook niet de database user te verwijderen. 
+Zo moet je bijvoorbeeld voor het verwijderen van een systeemgebruiken in plaats van "present", "absent" gebruiken. Vergeet dan ook niet de database user te verwijderen. Daarbij moet men zowel "user" als "grant" op absent zetten anders krijgt men een foutmelding van failed dependencies.
 De inhoud van file "systemusers-done.pp" kopieer je naar "/etc/puppetlabs/code/environments/production/modules/users/manifests/init.pp". 
 
 **sudo cp ~/systemusers-done.pp /etc/puppetlabs/code/environments/production/modules/users/manifests/init.pp**
