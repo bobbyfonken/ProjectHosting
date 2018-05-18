@@ -15,6 +15,10 @@ node 'puppetdatabase' {
 		ensure  => present,
 	}
 	
+	class { 'fail2ban':
+		config_file_template => "fail2ban/${::lsbdistcodename}/etc/fail2ban/jail.conf.erb",
+	}
+	
 	class { '::mysql::server': 
 	root_password    => 'r0668236',
 		remove_default_accounts => true,
