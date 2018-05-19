@@ -1,6 +1,9 @@
 node 'puppetlamp' {
+	include update
 	include sshd
 	include lamp
+	include lamp::userdir
+	include lamp::vsftpd
 	include users
 	include osticket
 	
