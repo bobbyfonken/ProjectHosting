@@ -11,4 +11,8 @@ class lamp::userdir {
 		require => Package['apache2'], 
 		content => template('/srv/puppet/files/php7.0.conf'), 
 	} 
+	
+	exec { 'apache reload 3' : 
+		command => '/usr/sbin/service apache2 reload', 
+	}
 }
