@@ -12,13 +12,15 @@ class lamp::phpmyadmin {
 		ensure => latest, 
 	} 
 	
-	# Comment volgende exec uit van zodra het 1 keer is uitgevoerd en phpmyadmin werkende is! 
-	exec { 'apache2 phpmyadmin' : 
-		command => '/bin/ln -s /etc/phpmyadmin/apache.conf /etc/apache2/conf-available/phpmyadmin.conf', 
+	file { '/etc/apache2/conf-available/phpmyadmin.conf': 
+		owner   => 'root', 
+		group   => 'root', 
+		require => Package['phpmyadmin'], 
+		content => template('/srv/puppet/files/phpmyadmin.conf'), 
 	} 
 	
 	exec { 'apache2 phpmyadmin 2' : 
-		command => '/usr/sbin/a2enconf phpmyadmin.conf', 
+		command => '/usr/sbin/a2enconf phpmyadmin', 
 	} 
 	
 	exec { 'apache2 phpmyadmin reload' : 
