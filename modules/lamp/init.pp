@@ -38,6 +38,27 @@ class lamp {
 		command => '/usr/sbin/a2enconf custom',
 	} 
 	
+	# custom apache2 config 4
+	package { 'libapache2-mod-evasive' :  
+		ensure => latest, 
+	} 
+	
+	file { '/etc/apache2/mods-enabled/evasive.conf': 
+		notify  => Service['apache2'], 
+		owner   => 'root', 
+		group   => 'root', 
+		require => Package['apache2'], 
+		content => template('/srv/puppet/files/evasive.conf'), 
+	} 
+	
+	# Make directory for evasive log files
+	file { '/var/log/mod_evasive':
+		ensure => 'directory',
+		owner  => 'root',
+		group  => 'www-data',
+		mode   => '0750',
+	}
+	
 	file { '/etc/apache2/mods-enabled/php7.0.conf': 
 		notify  => Service['apache2'], 
 		owner   => 'root', 
