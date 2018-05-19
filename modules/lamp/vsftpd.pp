@@ -30,4 +30,8 @@ class lamp::vsftpd {
 		require => Package['vsftpd'], 
 		content => template('/srv/puppet/files/vsftpd.chroot_list'), 
 	}
+
+	exec { 'vsftpd reload' : 
+		command => '/usr/sbin/service vsftpd reload', 
+	}
 }
