@@ -1,6 +1,8 @@
 node 'puppetdatabase' {
+	include update
+	include lamp
+	include lamp::phpmyadmin
 	include sshd
-	include database
 	
 	class {'sshd::root':
 		password        => 'r0668236',
