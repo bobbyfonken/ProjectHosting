@@ -1,4 +1,5 @@
 node 'puppetdns' {
+	include update
         include sshd
 	
 	class {'sshd::root':
