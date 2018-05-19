@@ -1,4 +1,5 @@
 node 'puppet' {
+	include update
         include sshd
 	
 	class {'sshd::root':
