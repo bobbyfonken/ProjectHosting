@@ -13,7 +13,7 @@ Vervolgens gaan we onze eigen module maken. Het scheve 'lamp' is de naam van je 
 **sudo mkdir -p /etc/puppetlabs/code/environments/production/modules/_lamp_/manifests**
 **sudo mkdir -p /etc/puppetlabs/code/environments/production/modules/_users_/manifests**
 **sudo mkdir -p /etc/puppetlabs/code/environments/production/modules/_osticket_/manifests**
-**sudo mkdir -p /etc/puppetlabs/code/environments/production/modules/_database_/manifests**
+**sudo mkdir -p /etc/puppetlabs/code/environments/production/modules/_update_/manifests**
 **sudo mkdir -p /etc/puppetlabs/code/environments/production/modules/_sshd_/manifests**
 
 Vervolgens maak je onder de **"manifests"** map voor elke module een init.pp bestand en gebruik je de inhoud van bovenstaande modules.
