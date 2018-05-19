@@ -63,18 +63,6 @@ class lamp {
 		mode   => '0750',
 	}
 	
-	file { '/etc/apache2/mods-available/php7.0.conf': 
-		notify  => Service['apache2'], 
-		owner   => 'root', 
-		group   => 'root', 
-		require => Package['apache2'], 
-		content => template('/srv/puppet/files/php7.0.conf'), 
-	} 
-
-	exec { 'a2enmod php7.0' :
-		command => '/usr/sbin/a2enmod php7.0',
-	}
-	
 	exec { 'apache reload' : 
 		command => '/usr/sbin/service apache2 reload', 
 	}
