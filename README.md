@@ -294,12 +294,21 @@ Onder Users:
 				max_user_connections => "0",
 				password_hash => "*5BBB23A9A9EB2121530E29594602EC7A69BAA4CF",
 			},
-
+			
+"osticket@localhost" => {
+				ensure => "present",
+				max_connections_per_hour => "0",
+				max_user_connections => "0",
+				password_hash => "*5BBB23A9A9EB2121530E29594602EC7A69BAA4CF",
+			},
+			
+			
 Onder Database:
 "osticket" => {
 				ensure => "present",
 				charset => "utf8",
 			},
+			
 
 Onder Grants:
 "osticket@192.168.137.105/osticket.*" => {
@@ -308,6 +317,14 @@ Onder Grants:
 				privileges => ["ALL"],
 				table => "osticket.*",
 				user => "osticket@192.168.137.105",
+			},
+			
+"osticket@localhost/osticket.*" => {
+				ensure => "present",
+				options => ["GRANT"],
+				privileges => ["ALL"],
+				table => "osticket.*",
+				user => "osticket@localhost",
 			},
 ```
 
