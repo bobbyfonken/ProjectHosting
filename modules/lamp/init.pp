@@ -15,6 +15,10 @@ class lamp {
 		ensure => latest, 
 	} 
 	
+	Package { 'php7.0-mysql' :
+                ensure => latest,
+        }
+	
 	package { 'libapache2-mod-php7.0' :  
 		ensure => latest, 
 	} 
