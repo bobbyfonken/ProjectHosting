@@ -36,6 +36,7 @@ class lamp {
 	# custom apache2 config 3
 	exec { 'a2enconf custom.conf' :
 		command => '/usr/sbin/a2enconf custom',
+		subscribe => File['/etc/apache2/conf-available/custom.conf'],
 	} 
 	
 	# custom apache2 config 4
