@@ -21,7 +21,7 @@ Pas op met het kopiëren! Linux kan hier problemen mee krijgen (spaties vs tabs)
 
 **sudo nano /etc/puppetlabs/code/environments/production/modules/lamp/manifests/init.pp**
 
-Je zal merken dat erin de manifesten verwezen wordt naar bepaalde "template" bestanden. Zorg dat deze aanwezig zijn! Bij mij staan ze op de puppet master onder **"/srv/puppet/files/"**.
+Je zal merken dat erin de manifesten verwezen wordt naar bepaalde "template" bestanden. Zorg dat deze aanwezig zijn! Bij mij staan ze op de puppet master onder **"/srv/puppet/files/"**. Bekijk deze bestanden, het kan zijn dat je hierin informatie zoals wachtwoorden moet veranderen.
 
 Andere manifesten van de verschillende modules vind je hierboven terug. Deze zijn op een gelijkaardige manier gemaakt.
 Let wel op bij de sshd module, deze heeft nog een tweede manifest. In het sshd module init.pp bestand staat de "class sshd". Het manifest users.pp heeft de "class sshd::users". Deze volgen op elkaar. De naam van het bestand is hetzelfde als de naam van de deelklassen: "class sshd::_users_".
