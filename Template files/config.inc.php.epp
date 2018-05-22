@@ -1,3 +1,7 @@
+<% | String $controluser,
+String $controlpass,
+String $pmadb,
+| -%>
 <?php /**
  * Debian local configuration file
  *
@@ -15,7 +19,6 @@
  * want to do this, make sure to properly secure the access to this file
  * (also on the filesystem level).
  */
-
 if (!function_exists('check_file_access')) {
 	function check_file_access($path)
 	{
@@ -30,12 +33,10 @@ if (!function_exists('check_file_access')) {
 			}
 		}
 	}
-
 // Load secret enerated on postinst
 if (check_file_access('/var/lib/phpmyadmin/blowfish_secret.inc.php')) {
 	require('/var/lib/phpmyadmin/blowfish_secret.inc.php');
 }
-
 // load autoconf local config
 if
 (check_file_access('/var/lib/phpmyadmin/config.inc.php')) {
@@ -62,7 +63,6 @@ if (!empty($dbname)) {
 	/* Server parameters */
 	if (empty($dbserver)) $dbserver = 'localhost';
 	$cfg['Servers'][$i]['host'] = $dbserver;
-
 	if (!empty($dbport) || $dbserver != 'localhost') {
 		$cfg['Servers'][$i]['connect_type'] = 'tcp';
 		$cfg['Servers'][$i]['port'] = $dbport;
@@ -71,10 +71,10 @@ if (!empty($dbname)) {
 	/* Select mysqli if your server has it */
 	$cfg['Servers'][$i]['extension'] = 'mysqli';
 	/* Optional: User for advanced features */
-	$cfg['Servers'][$i]['controluser'] = 'pma';
-	$cfg['Servers'][$i]['controlpass'] = 'r0668236';
+	$cfg['Servers'][$i]['controluser'] = '<%= $controluser %>';
+	$cfg['Servers'][$i]['controlpass'] = '<%= $controlpass %>';
 	/* Optional: Advanced phpMyAdmin features */
-	$cfg['Servers'][$i]['pmadb'] = 'phpmyadmin';
+	$cfg['Servers'][$i]['pmadb'] = '<%= pmadb %>';
 	$cfg['Servers'][$i]['bookmarktable'] = 'pma__bookmark';
 	$cfg['Servers'][$i]['relation'] = 'pma__relation';
 	$cfg['Servers'][$i]['table_info'] = 'pma__table_info';
@@ -94,11 +94,9 @@ if (!empty($dbname)) {
 	$cfg['Servers'][$i]['central_columns'] = 'pma__central_columns';
 	$cfg['Servers'][$i]['designer_settings'] = 'pma__designer_settings';
 	$cfg['Servers'][$i]['export_templates'] = 'pma__export_templates';
-
 	/* Uncomment the following to enable logging in to passwordless accounts,
 	fter taking note of the associated security risks. */
 	// $cfg['Servers'][$i]['AllowNoPassword'] = TRUE;
-
 	/* Advance to next server for rest of config */
 	$i++;
 }
@@ -114,7 +112,6 @@ if (!empty($dbname)) {
 /**
  * phpMyAdmin configuration storage settings.
  */
-
 /* User used to manipulate with storage */
 // $cfg['Servers'][$i]['controlhost'] = '';
 // $cfg['Servers'][$i]['controlport'] = '';
