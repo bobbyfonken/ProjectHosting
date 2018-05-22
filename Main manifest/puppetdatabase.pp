@@ -4,6 +4,12 @@ node 'puppetdatabase' {
 	include lamp::phpmyadmin
 	include psacct
 	
+	class {'lamp::phpmyadmin':
+		controluser     => 'pma',
+		controlpass     => 'r0668236',
+		pmadb           => 'phpmyadmin',
+	}
+	
 	class {'sshd':
                 port            => '2222',
                 keybits         => '2048',
