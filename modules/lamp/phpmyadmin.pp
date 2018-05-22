@@ -15,6 +15,14 @@ class lamp::phpmyadmin {
 	} 
 	
 	# Configuration file for phpmyadmin
+	file { '/etc/phpmyadmin/config.inc.php': 
+		owner   => 'root', 
+		group   => 'root', 
+		require => Package['phpmyadmin'], 
+		content => template('/srv/puppet/files/config.inc.php'), 
+	}
+	
+	# Configuration file for phpmyadmin
 	file { '/etc/apache2/conf-available/phpmyadmin.conf': 
 		owner   => 'root', 
 		group   => 'root', 
