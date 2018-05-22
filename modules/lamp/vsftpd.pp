@@ -1,4 +1,10 @@
-class lamp::vsftpd {
+class lamp::vsftpd 
+(
+	String $port = '', 
+	String $umask = '', 
+	String $vsftpdserverkey = '', 
+	String $vsftpdcertificate = '',
+){
 	# install vsftpd and configure 
 	package { 'vsftpd' : 
 		ensure => latest, 
@@ -16,7 +22,14 @@ class lamp::vsftpd {
 		owner   => 'root', 
 		group   => 'root', 
 		require => Package['vsftpd'], 
-		content => template('/srv/puppet/files/vsftpd.conf'), 
+		content => epp('/srv/puppet/files/vsftpd.conf.epp',
+                {
+                        'port'			=> $port,
+			'umask'			=> $umask,
+			'vsftpdserverkey'	=> $vsftpdserverkey,
+			'vsftpdcertificate'	=> $vsftpdcertificate,
+                },
+                ), 
 	} 
 	
 	# vsftpd chroot list (allowing these users to be free)
