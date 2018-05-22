@@ -1,6 +1,5 @@
 node 'puppetdns' {
 	include update
-	include dns
 	include psacct
 	
 	class {'sshd':
@@ -25,4 +24,12 @@ node 'puppetdns' {
 	class { 'fail2ban':
 		config_file_template => "fail2ban/${::lsbdistcodename}/etc/fail2ban/jail.conf.erb",
 	}
+	
+	class {'dns':
+                ns              => 'puppetdns',
+                root            => 'projecthosting',
+                nsip            => '192.168.137.106',
+                serial          => '4',
+                arecords        => ['puppetdatabase.projecthosting.     IN      A       192.1$
+        }
 }
