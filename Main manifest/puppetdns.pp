@@ -28,8 +28,11 @@ node 'puppetdns' {
 	class {'dns':
                 ns              => 'puppetdns',
                 root            => 'projecthosting',
-                nsip            => '192.168.137.106',
+                nsip           => '192.168.137.106',
                 serial          => '4',
-                arecords        => ['puppetdatabase.projecthosting.     IN      A       192.1$
+                arecords       => ['puppetdatabase.projecthosting.     IN      A       192.168.137.107',
+                                'puppetdns.projecthosting.      IN      A       192.168.137.106',
+                                'puppetlamp.projecthosting.     IN      A       192.168.137.105',
+                                'puppet.projecthosting.         IN      A       192.168.137.104'],
         }
 }
