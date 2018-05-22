@@ -1,8 +1,13 @@
 node 'puppetdns' {
 	include update
-        include sshd
 	include dns
 	include psacct
+	
+	class {'sshd':
+                port            => '2222',
+                keybits         => '2048',
+                allownokey      => 'no',
+        }
 	
 	class {'sshd::root':
 		password        => 'r0668236',
