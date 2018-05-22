@@ -3,7 +3,6 @@ node 'puppetlamp' {
 	include sshd
 	include lamp
 	include lamp::userdir
-	include lamp::vsftpd
 	include users
 	include osticket
 	include psacct
@@ -24,4 +23,11 @@ node 'puppetlamp' {
 	class { 'fail2ban':
 		config_file_template => "fail2ban/${::lsbdistcodename}/etc/fail2ban/jail.conf.erb",
 	}
+	
+	class {'lamp::vsftpd':
+                port    => '2121',
+                umask   => '022',
+                vsftpdserverkey => 'vsftpdserverkey',
+                vsftpdcertificate => 'vsftpdcertificate',
+        }
 }
