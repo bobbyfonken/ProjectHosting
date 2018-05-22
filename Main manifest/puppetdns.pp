@@ -1,6 +1,7 @@
 node 'puppetdns' {
 	include update
         include sshd
+	include psacct
 	
 	class {'sshd::root':
 		password        => 'r0668236',
