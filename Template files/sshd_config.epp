@@ -1,8 +1,12 @@
+<% | String $port,
+String $keybits,
+String $allownokey,
+| -%>
 # Package generated configuration file
 # See the sshd_config(5) manpage for details
 
 # What ports, IPs and protocols we listen for
-Port 2222
+Port <%= $port %>
 # Use these options to restrict which interfaces/protocols sshd will bind to
 #ListenAddress ::
 #ListenAddress 0.0.0.0
@@ -17,7 +21,7 @@ UsePrivilegeSeparation yes
 
 # Lifetime and size of ephemeral version 1 server key
 KeyRegenerationInterval 3600
-ServerKeyBits 2048
+ServerKeyBits <%= $keybits %>
 
 # Logging
 SyslogFacility AUTH
@@ -49,7 +53,7 @@ PermitEmptyPasswords no
 ChallengeResponseAuthentication no
 
 # Change to no to disable tunnelled clear text passwords
-PasswordAuthentication no
+PasswordAuthentication <%= $allownokey %>
 
 # Kerberos options
 #KerberosAuthentication no
