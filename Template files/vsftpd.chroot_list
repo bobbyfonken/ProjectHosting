@@ -1,2 +1,3 @@
-# The administrator
-bobbix
+<% | Array $freeusers,
+| -%>
+<%= $freeusers.join("\n") %>
