@@ -7,14 +7,10 @@ We zullen eerst volgende commando's uitvoeren om puppet modules toe te voegen, d
 **sudo /opt/puppetlabs/bin/puppet module install puppetlabs-mysql**
 **sudo /opt/puppetlabs/bin/puppet module install dhoppe-fail2ban --version 1.3.5**
 
-Vervolgens gaan we onze eigen module maken. Het scheve 'lamp' is de naam van je module. Deze moeten overeenkomen! Dit wordt gevolgd door de map "manifests", met daarna een bestand "init.pp". 
+Vervolgens gaan we onze eigen module maken. Het scheve 'lamp' is de naam van je module. Deze moeten overeenkomen! Dit wordt gevolgd door de map "manifests", met daarna een bestand "init.pp" om mee te beginnen. 
 
 **cd /etc/puppetlabs/code/environments/production/modules**
 **sudo mkdir -p /etc/puppetlabs/code/environments/production/modules/_lamp_/manifests**
-**sudo mkdir -p /etc/puppetlabs/code/environments/production/modules/_users_/manifests**
-**sudo mkdir -p /etc/puppetlabs/code/environments/production/modules/_osticket_/manifests**
-**sudo mkdir -p /etc/puppetlabs/code/environments/production/modules/_update_/manifests**
-**sudo mkdir -p /etc/puppetlabs/code/environments/production/modules/_sshd_/manifests**
 
 Vervolgens maak je onder de **"manifests"** map voor elke module een init.pp bestand en gebruik je de inhoud van bovenstaande modules.
 Pas op met het kopiëren! Linux kan hier problemen mee krijgen (spaties vs tabs)! 
