@@ -16,6 +16,7 @@ This will automate the configuration of file upload with PHP aswell as make the 
          * [Generating system users and mysql users with Python3](#generating-system-users-and-mysql-users-with-python3)
       * [Postconfiguratie](#postconfiguratie)
          * [VSFTPD](#vsftpd)
+         * [phpmyadmin](#phpmyadmin)
          * [osTicket](#osticket)
    * [Conclusie](#conclusie)
 
@@ -292,23 +293,35 @@ Onder Users:
 				ensure => "present",
 				max_connections_per_hour => "0",
 				max_user_connections => "0",
-				password_hash => "*5BBB23A9A9EB2121530E29594602EC7A69BAA4CF",
-			},
+				password_hash => "password hash here",
+},
 			
 "osticket@localhost" => {
 				ensure => "present",
 				max_connections_per_hour => "0",
 				max_user_connections => "0",
-				password_hash => "*5BBB23A9A9EB2121530E29594602EC7A69BAA4CF",
-			},
-			
+				password_hash => "password hash here",
+},
+
+"pma@localhost" => {
+				ensure => "present",
+				max_connections_per_hour => "0",
+				max_user_connections => "0",
+				password_hash => "password hash here",
+},
+
 			
 Onder Database:
 "osticket" => {
 				ensure => "present",
 				charset => "utf8",
-			},
-			
+},
+
+"phpmyadmin" => {
+				ensure => "present",
+				charset => "utf8",
+},
+
 
 Onder Grants:
 "osticket@192.168.137.105/osticket.*" => {
@@ -326,6 +339,14 @@ Onder Grants:
 				table => "osticket.*",
 				user => "osticket@localhost",
 			},
+
+"pma@localhost/phpmyadmin.*" => {
+				ensure => "present",
+				options => ["GRANT"],
+				privileges => ["ALL"],
+				table => "phpmyadmin.*",
+				user => "pma@localhost",
+},
 ```
 
 Vervolgens kan men op de puppet agent volgende commando uitvoeren.  
@@ -337,6 +358,9 @@ Het start de automatische configuratie van je server.
 Onderstaand commando genereert voor ons een keypair voor vsftpd, dit moet maar eenmalig.
 
 **sudo openssl req -x509 -nodes -newkey rsa:2048 -keyout /etc/ssl/private/vsftpdserverkey.pem -out /etc/ssl/certs/vsftpdcertificate.pem -days 365**
+
+### phpmyadmin
+Log in als de pma user. Wachtwoord heb je normaal ingesteld in het puppetdatabase.pp manifest. Volg de instructies die in het rood vandonder staan.
 
 ### osTicket
 Om osTicket correct te installeren, volg je onderstaande stappen.
