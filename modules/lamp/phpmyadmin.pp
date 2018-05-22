@@ -1,28 +1,22 @@
-class lamp::phpmyadmin {
+class lamp::phpmyadmin 
+(
+String $controluser = '',
+String $controlpass = '',
+String $pmadb = '',
+){
 	# install phpmyadmin 
 	package { 'phpmyadmin' : 
 		ensure => latest, 
 	} 
 	
-	# install phpmyadmin
 	package { 'php-mbstring' : 
 		ensure => latest, 
 	} 
 	
-	# install phpmyadmin
 	package { 'php-gettext' : 
 		ensure => latest, 
 	} 
 	
-	# Configuration file for phpmyadmin
-	file { '/etc/phpmyadmin/config.inc.php': 
-		owner   => 'root', 
-		group   => 'root', 
-		require => Package['phpmyadmin'], 
-		content => template('/srv/puppet/files/config.inc.php'), 
-	}
-	
-	# Configuration file for phpmyadmin
 	file { '/etc/apache2/conf-available/phpmyadmin.conf': 
 		owner   => 'root', 
 		group   => 'root', 
@@ -30,13 +24,26 @@ class lamp::phpmyadmin {
 		content => template('/srv/puppet/files/phpmyadmin.conf'), 
 	} 
 	
-	# activate configuration in apache
 	exec { 'apache2 phpmyadmin 2' : 
 		command => '/usr/sbin/a2enconf phpmyadmin', 
+		subscribe => File['/etc/apache2/conf-available/phpmyadmin.conf'],
 	} 
 	
-	# reload apache to enable phpmyadmin
 	exec { 'apache2 phpmyadmin reload' : 
 		command => '/usr/sbin/service apache2 reload', 
 	} 
+
+	# Configuration file for phpmyadmin
+	file { '/etc/phpmyadmin/config.inc.php':
+		owner => 'root',
+		group => 'root',
+		require => Package['phpmyadmin'],
+		content => epp('/srv/puppet/files/config.inc.php.epp',
+		{
+			'controluser'	=> $controluser,
+			'controlpass'	=> $controlpass,
+			'pmadb'		=> $pmadb,
+		},
+		),
+	}
 }
