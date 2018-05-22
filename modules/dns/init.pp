@@ -26,7 +26,11 @@ Array $arecords = '',
 		owner	=> 'root',
 		group	=> 'bind',
 		require	=> Package['bind9'],
-		content	=> template('/srv/puppet/files/named.conf.local'),
+		content	=> epp('/srv/puppet/files/named.conf.local.epp',
+		{
+			'root2'	=> $root,
+		},
+		),
 	}
 
 	# Make directory for zone files
