@@ -1,3 +1,5 @@
+<% | String $root2,
+| -%>
 //
 // Do any local configuration here
 //
@@ -6,9 +8,9 @@
 // organization
 //include "/etc/bind/zones.rfc1918";
 
-zone "projecthosting" {
+zone "<%= $root2 %>" {
         notify no;
         allow-update{none;};
         type master;
-        file "/etc/bind/zones/projecthosting";
+        file "/etc/bind/zones/<%= $root2 %>";
 };
