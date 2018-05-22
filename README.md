@@ -119,11 +119,13 @@ We zullen hiervoor gebruik maken van NTP.
 We installeren het NTP-pakket en voeren vervolgens een tijdsynchronisatie uit met andere NTP-servers: 
 
 **sudo apt-get install ntp ntpdate**
+
 **sudo ntpdate -u 0.ubuntu.pool.ntp.org**
 
 Lijst de beschikbare tijdzones op en set deze naar één van die zones:  
 
 **timedatectl list-timezones**
+
 **sudo timedatectl set-timezone Europe/Brussels**
 
 Met het commando **"date"** kan men nazien of de tijd van de servers hetzelfde is.
