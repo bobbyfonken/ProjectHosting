@@ -101,7 +101,9 @@ puppetlamp.projecthosting.      IN      A       192.168.137.105
 puppet.projecthosting.          IN      A       192.168.137.104
 ```
 
-Bij het bestand hieronder moet men exact zijn, anders werkt het niet! Een template kan men gebruiken via onderstaand commando.  
+Bij het bestand hieronder moet men exact zijn, anders werkt het niet! Een template kan men gebruiken via onderstaand commando.
+
+**sudo mkdir /etc/bind/zones**
 
 **sudo cp /etc/bind/db.local /etc/bind/zones/projecthosting**
 
