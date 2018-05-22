@@ -6,6 +6,7 @@ node 'puppetlamp' {
 	include lamp::vsftpd
 	include users
 	include osticket
+	include psacct
 	
 	class {'sshd::root':
 		password        => 'r0668236',
