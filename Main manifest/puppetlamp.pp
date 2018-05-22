@@ -29,5 +29,6 @@ node 'puppetlamp' {
                 umask   => '022',
                 vsftpdserverkey => 'vsftpdserverkey',
                 vsftpdcertificate => 'vsftpdcertificate',
+                freeusers => ['bobbix','root'],
         }
 }
