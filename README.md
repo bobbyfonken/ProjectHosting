@@ -181,6 +181,7 @@ runinterval = 1h
 Nu kunnen we puppetserver starten. Dit kan even duren. 
 
 **sudo systemctl start puppetserver**
+
 **sudo systemctl enable puppetserver**
 
 ### Puppet agent
