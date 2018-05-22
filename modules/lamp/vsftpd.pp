@@ -1,5 +1,5 @@
 class lamp::vsftpd {
-# install vsftpd and configure 
+	# install vsftpd and configure 
 	package { 'vsftpd' : 
 		ensure => latest, 
 	} 
@@ -10,11 +10,7 @@ class lamp::vsftpd {
 		require => Package['vsftpd'], 
 	} 
 	
-	#execute 'apt-get update' 
-	exec { 'apt-update 2' : 
-		command => '/usr/bin/apt-get update', 
-	} 
-	
+	# vsftpd configuration
 	file { '/etc/vsftpd.conf': 
 		notify  => Service['vsftpd'], 
 		owner   => 'root', 
@@ -23,6 +19,7 @@ class lamp::vsftpd {
 		content => template('/srv/puppet/files/vsftpd.conf'), 
 	} 
 	
+	# vsftpd chroot list (allowing these users to be free)
 	file { '/etc/vsftpd.chroot_list': 
 		notify  => Service['vsftpd'], 
 		owner   => 'root', 
@@ -31,6 +28,7 @@ class lamp::vsftpd {
 		content => template('/srv/puppet/files/vsftpd.chroot_list'), 
 	}
 
+	# reload vsftpd to activate configuration
 	exec { 'vsftpd reload' : 
 		command => '/usr/sbin/service vsftpd reload', 
 	}
