@@ -1,4 +1,10 @@
-class dns {
+class dns (
+String $root = '',
+String $ns = '',
+String $nsip = '',
+String $serial = '',
+Array $arecords = '',
+){
 	package { 'bind9':
 			ensure => 'installed',
 	}
@@ -38,7 +44,15 @@ class dns {
 			owner   => 'root',
 			group   => 'bind',
 			require => Package['bind9'],
-			content => template('/srv/puppet/files/projecthosting'),
-      subscribe => File['/etc/bind/zones/'],
+			subscribe => File['/etc/bind/zones/'],
+			content => epp('/srv/puppet/files/projecthosting.epp',
+			{
+				'root'		=> $root,
+				'ns'		=> $ns,
+				'nsip'		=> $nsip,
+				'serial'	=> $serial,
+				'arecords'	=> $arecords,
+			},
+			),
 	}
 }
