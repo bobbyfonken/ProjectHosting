@@ -139,7 +139,9 @@ We gaan hiervoor naar de PuppetLabs repository rpm en installeren deze repositor
 Dit doen we als volgt: Ik heb dit op elke machine uitgevoerd. 
 
 **wget https://apt.puppetlabs.com/puppetlabs-release-pc1-xenial.deb**
+
 **sudo dpkg -i puppetlabs-release-pc1-xenial.deb**
+
 **sudo apt-get update**
 
 ### Puppet master
