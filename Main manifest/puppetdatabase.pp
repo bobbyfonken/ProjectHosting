@@ -4,6 +4,7 @@ node 'puppetdatabase' {
 	include lamp::phpmyadmin
 	include psacct
 	
+	# This should be the same as the pma user, database, and password
 	class {'lamp::phpmyadmin':
 		controluser     => 'pma',
 		controlpass     => 'r0668236',
