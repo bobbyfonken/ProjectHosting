@@ -6,6 +6,8 @@ We zullen eerst volgende commando's uitvoeren om puppet modules toe te voegen, d
 
 **sudo /opt/puppetlabs/bin/puppet module install puppetlabs-mysql**
 
+**sudo /opt/puppetlabs/bin/puppet module install puppetlabs-stdlib --version 4.25.1**
+
 **sudo /opt/puppetlabs/bin/puppet module install dhoppe-fail2ban --version 1.3.5**
 
 **sudo /opt/puppetlabs/bin/puppet module install puppetlabs-firewall --version 1.12.0**
