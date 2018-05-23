@@ -4,6 +4,20 @@ node 'puppetdatabase' {
 	include lamp::phpmyadmin
 	include psacct
 	
+	# default port used by puppet
+        firewall { '112 open port 8140':
+                dport   => 8140,
+                proto   => tcp,
+                action  => 'accept',
+        }
+
+        # port number should be the same as the one from sshd below
+        firewall { '113 open port 2222 sshd':
+                dport   => 2222,
+                proto   => tcp,
+                action  => 'accept',
+        }
+	
 	# This should be the same as the pma user, database, and password
 	class {'lamp::phpmyadmin':
 		controluser     => 'pma',
