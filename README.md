@@ -19,7 +19,8 @@ This will automate the configuration of file upload with PHP aswell as make the 
          * [phpmyadmin](#phpmyadmin)
          * [osTicket](#osticket)
    * [Conclusie](#conclusie)
-
+## Extra
+Via het commando wget kan je eventueel bestanden van github halen
 ## Preconfiguratie
 ### DNS
 We moeten eerst de namen van onze machines veranderen. Verander de naam van de Puppet master in **"puppet"**. Dit is een verplichtheid. 
