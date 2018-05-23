@@ -4,7 +4,7 @@ node 'puppet' {
 	include my_fw
 	
 	firewall { '109 allow all from puppetlamp':
-                source  => '192.168.137.104',
+                source  => '192.168.137.105',
                 proto   => 'all',
                 action  => 'accept',
         }
