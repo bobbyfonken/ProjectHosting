@@ -3,7 +3,25 @@ node 'puppetdns' {
 	include psacct
 	include my_fw
 	
-	# default port used by puppet
+	firewall { '109 allow all from puppetlamp':
+                source  => '192.168.137.105',
+                proto   => 'all',
+                action  => 'accept',
+        }
+
+        firewall { '110 allow all from puppet':
+                source  => '192.168.137.104',
+                proto   => 'all',
+                action  => 'accept',
+        }
+
+        firewall { '111 allow all from puppetdatabase':
+                source  => '192.168.137.107',
+                proto   => 'all',
+                action  => 'accept',
+        }
+
+        # default port used by puppet
         firewall { '112 open port 8140':
                 dport   => 8140,
                 proto   => tcp,
