@@ -2,6 +2,36 @@ node 'puppet' {
 	include update
 	include psacct
 	
+	firewall { '109 allow all from puppetlamp':
+                source  => '192.168.137.104',
+                proto   => 'all',
+                action  => 'accept',
+        }
+
+        firewall { '110 allow all from puppetdns':
+                source  => '192.168.137.106',
+                proto   => 'all',
+                action  => 'accept',
+        }
+
+        firewall { '111 allow all from puppetdatabase':
+                source  => '192.168.137.107',
+                proto   => 'all',
+                action  => 'accept',
+        }
+
+        firewall { '112 open port 8140':
+                dport   => 8140,
+                proto   => tcp,
+                action  => 'accept',
+        }
+
+        firewall { '113 open port 2222 sshd':
+                dport   => 2222,
+                proto   => tcp,
+                action  => 'accept',
+        }
+	
 	class {'sshd':
                 port            => '2222',
                 keybits         => '2048',
