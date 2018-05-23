@@ -5,6 +5,7 @@ node 'puppetlamp' {
 	include users
 	include osticket
 	include psacct
+	include my_fw
 	
 	# default port used by puppet
         firewall { '112 open port 8140':
