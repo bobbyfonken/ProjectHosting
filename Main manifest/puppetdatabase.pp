@@ -1,7 +1,6 @@
 node 'puppetdatabase' {
 	include update
 	include lamp
-	include lamp::phpmyadmin
 	include psacct
 	include my_fw
 	
