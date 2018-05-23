@@ -3,6 +3,7 @@ node 'puppetdatabase' {
 	include lamp
 	include lamp::phpmyadmin
 	include psacct
+	include my_fw
 	
 	# default port used by puppet
         firewall { '112 open port 8140':
