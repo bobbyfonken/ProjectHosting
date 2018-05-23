@@ -8,6 +8,8 @@ We zullen eerst volgende commando's uitvoeren om puppet modules toe te voegen, d
 
 **sudo /opt/puppetlabs/bin/puppet module install dhoppe-fail2ban --version 1.3.5**
 
+**sudo /opt/puppetlabs/bin/puppet module install puppetlabs-firewall --version 1.12.0**
+
 Vervolgens gaan we onze eigen module maken. Het scheve 'lamp' is de naam van je module. Deze moeten overeenkomen! Dit wordt gevolgd door de map "manifests", met daarna een bestand "init.pp" om mee te beginnen. 
 
 **cd /etc/puppetlabs/code/environments/production/modules**
