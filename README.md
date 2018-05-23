@@ -363,6 +363,14 @@ Vervolgens kan men op de puppet agent volgende commando uitvoeren.
 Het start de automatische configuratie van je server.
 **sudo /opt/puppetlabs/bin/puppet agent -t**
 
+Voor het manueel genereren van een mysql password hash, kan je inloggen op de database via de command line.
+
+**sudo mysql -u root -p**
+
+Vervolgens kan je volgend commando uitvoeren om een wachtwoord te veranderen in een password hash die te gebruiken is in het puppet manifest.
+
+**SELECT PASSWORD('MYPASSWORD');**
+
 ## Postconfiguratie
 ### VSFTPD
 Onderstaand commando genereert voor ons een keypair voor vsftpd, dit moet maar eenmalig.
