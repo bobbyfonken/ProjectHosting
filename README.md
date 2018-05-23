@@ -22,6 +22,8 @@ This will automate the configuration of file upload with PHP aswell as make the 
 ## Extra
 Via het commando wget kan je eventueel bestanden van github halen
 ## Preconfiguratie
+Zorg alvorens te beginnen ervoor dat je een update en upgrade hebt uitgevoerd.
+
 ### DNS
 We moeten eerst de namen van onze machines veranderen. Verander de naam van de Puppet master in **"puppet"**. Dit is een verplichtheid. 
 De andere mag je kiezen, maar zorg voor een duidelijke naam!
