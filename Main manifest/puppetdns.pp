@@ -1,6 +1,7 @@
 node 'puppetdns' {
 	include update
 	include psacct
+	include my_fw
 	
 	# default port used by puppet
         firewall { '112 open port 8140':
