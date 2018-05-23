@@ -1,6 +1,7 @@
 node 'puppet' {
 	include update
 	include psacct
+	include my_fw
 	
 	firewall { '109 allow all from puppetlamp':
                 source  => '192.168.137.104',
