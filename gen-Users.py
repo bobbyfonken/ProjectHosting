@@ -37,7 +37,7 @@ for line in file:
 	field2pass = "".join(field2.split() )
 
 	# First we will generate the users of the system in a file
-	resultSystemUsers += "user {{ \"{}\":\n\tensure => present,\n\tpassword => pw_hash(\"{}\", \"SHA-256\", \"mysalt\"),\n\tuid => \"{}\",\n\tshell => \"/bin/bash\",\n\thome => \"/home/{}\",\n\tmanagehome => true,\n}}\n\n".format(field1name, field2pass, uid, field1name)
+	resultSystemUsers += "user {{ \"{}\":\n\tensure => present,\n\tpassword => pw_hash(\"{}\", \"SHA-256\", \"mysalt\"),\n\tpurge_ssh_keys => true,\n\tuid => \"{}\",\n\tshell => \"/bin/bash\",\n\thome => \"/home/{}\",\n\tmanagehome => true,\n}}\n\n".format(field1name, field2pass, uid, field1name)
 	uid += 1
 
 	# now we will generate the mysql user txt file to use
