@@ -6,6 +6,9 @@
 
 listen=YES
 listen_port=<%= $port %>
+pasv_enable=YES
+pasv_max_port=10100
+pasv_min_port=10098
 anonymous_enable=NO
 local_enable=YES
 write_enable=YES
