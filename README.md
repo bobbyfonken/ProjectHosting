@@ -51,11 +51,11 @@ Het "dns-nameservers" richt je naar je dns-server in je netwerk.
 ```
 auto enp0s3**
 iface enp0s3 inet static
-address 192.168.137.106
+address 172.27.66.70
 netmask 255.255.255.0
 network 192.168.137.0
 gateway 192.168.137.1
-dns-nameservers 192.168.137.106
+dns-nameservers 172.27.66.71
 ```
 
 Vervolgens zullen we de namen van de machines veranderen in de volgende file.
@@ -69,10 +69,11 @@ Puppet: "/etc/hosts"
 ```
 127.0.0.1       localhost
 127.0.1.1       puppet
-192.168.137.104		puppet
-192.168.137.105		puppetLamp	puppetclient
-192.168.137.106		puppetDns	puppetclient
-192.168.137.107		puppetDatabase	puppetclient
+172.27.66.70		puppet
+172.27.66.73		puppetLamp	puppetclient
+172.27.66.71		puppetDns	puppetclient
+172.27.66.72		puppetDatabase	puppetclient
+172.27.66.74		puppetosticket	puppetclient
 ```
 
 Vervolgens passen we de file **"/etc/resolvconf/resolv.conf.d/base"** aan. We doen dit door zoals hieronder aangeven. Vervang het adres door jouw dns-server. 
@@ -106,10 +107,11 @@ $TTL    604800
         IN      A       192.168.137.106
         IN      AAAA    ::1
 ; name servers - A records
-puppetDatabase.projecthosting.	IN		A		192.168.137.107
-puppetdns.projecthosting.       IN      A       192.168.137.106
-puppetlamp.projecthosting.      IN      A       192.168.137.105
-puppet.projecthosting.          IN      A       192.168.137.104
+puppetDatabase.projecthosting.	IN		A		172.27.66.72
+puppetdns.projecthosting.       IN      A       172.27.66.71
+puppetlamp.projecthosting.      IN      A       172.27.66.73
+puppet.projecthosting.          IN      A       172.27.66.70
+puppetosticket.projecthosting.          IN      A       172.27.66.74
 ```
 
 Bij het bestand hieronder moet men exact zijn, anders werkt het niet! Een template kan men gebruiken via onderstaand commando.
@@ -316,25 +318,23 @@ Nu moet men nog het oorspronkelijk bestand verwijderen en vervangen door ons nie
 Voeg nu nog onderstaande sql-gebruiker toe in het manifest puppetdatabase.pp.
 ```
 Onder Users:
-"osticket@192.168.137.105" => {
-				ensure => "present",
-				max_connections_per_hour => "0",
-				max_user_connections => "0",
-				password_hash => "password hash here",
+ "osticket@172.27.66.74" => {
+                                ensure => "present",
+                                max_connections_per_hour => "0",
+                                max_user_connections => "0",
+                                password_hash => "*Password hash here",
 },
-			
 "osticket@localhost" => {
-				ensure => "present",
-				max_connections_per_hour => "0",
-				max_user_connections => "0",
-				password_hash => "password hash here",
+                                ensure => "present",
+                                max_connections_per_hour => "0",
+                                max_user_connections => "0",
+                                password_hash => "Password hash here",
 },
-
 "pma@localhost" => {
-				ensure => "present",
-				max_connections_per_hour => "0",
-				max_user_connections => "0",
-				password_hash => "password hash here",
+                                ensure => "present",
+                                max_connections_per_hour => "0",
+                                max_user_connections => "0",
+                                password_hash => "Password hash here",
 },
 
 			
@@ -351,35 +351,28 @@ Onder Database:
 
 
 Onder Grants:
-"osticket@192.168.137.105/osticket.*" => {
-				ensure => "present",
-				options => ["GRANT"],
-				privileges => ["ALL"],
-				table => "osticket.*",
-				user => "osticket@192.168.137.105",
-			},
-			
+"osticket@172.27.66.74/osticket.*" => {
+                                ensure => "present",
+                                options => ["GRANT"],
+                                privileges => ["ALL"],
+                                table => "osticket.*",
+                                user => "osticket@172.27.66.74",
+},
 "osticket@localhost/osticket.*" => {
-				ensure => "present",
-				options => ["GRANT"],
-				privileges => ["ALL"],
-				table => "osticket.*",
-				user => "osticket@localhost",
-			},
-
+                                ensure => "present",
+                                options => ["GRANT"],
+                                privileges => ["ALL"],
+                                table => "osticket.*",
+                                user => "osticket@localhost",
+},
 "pma@localhost/phpmyadmin.*" => {
-				ensure => "present",
-				options => ["GRANT"],
-				privileges => ["ALL"],
-				table => "phpmyadmin.*",
-				user => "pma@localhost",
+                                ensure => "present",
+                                options => ["GRANT"],
+                                privileges => ["ALL"],
+                                table => "phpmyadmin.*",
+                                user => "pma@localhost",
 },
 ```
-
-Vervolgens kan men op de puppet agent volgende commando uitvoeren.  
-Het start de automatische configuratie van je server.
-
-**sudo /opt/puppetlabs/bin/puppet agent -t**
 
 Voor het manueel genereren van een mysql password hash, kan je inloggen op de database via de command line.
 
@@ -388,6 +381,11 @@ Voor het manueel genereren van een mysql password hash, kan je inloggen op de da
 Vervolgens kan je volgend commando uitvoeren om een wachtwoord te veranderen in een password hash die te gebruiken is in het puppet manifest.
 
 **SELECT PASSWORD('MYPASSWORD');**
+
+Hierna kan men op de puppet agent volgende commando uitvoeren.  
+Het start de automatische configuratie van je server.
+
+**sudo /opt/puppetlabs/bin/puppet agent -t**
 
 ## Postconfiguratie
 ### VSFTPD
