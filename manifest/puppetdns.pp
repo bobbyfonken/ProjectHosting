@@ -2,6 +2,12 @@ node 'puppetdns' {
         include update
         include psacct
         include my_fw
+        
+        firewall { '108 allow all from puppetosticket':
+                source  => '172.27.66.74',
+                proto   => 'all',
+                action  => 'accept',
+        }
 
         firewall { '109 allow all from puppetlamp':
                 source  => '172.27.66.73',
