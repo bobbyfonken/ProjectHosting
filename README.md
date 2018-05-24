@@ -42,6 +42,7 @@ Hieronder vind je een overzicht van de VM's met IP-adres en naam.
 | puppetLamp 		|172.27.66.73 | 10.148.14.7 |
 | puppetDns 		|172.27.66.71 | 10.148.14.4 |
 | puppetDatabase 	|172.27.66.72 | 10.148.14.1 |
+| puppetOsticket 	|172.27.66.74 | 10.148.14.6 |
 
 We zetten eerst de netwerkconfiguratie goed. Doe dit voor elke VM zoals hieronder. 
 Veranderen het "address" naar het adres van jouw machine. 
