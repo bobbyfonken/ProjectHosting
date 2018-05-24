@@ -21,6 +21,13 @@ This will automate the configuration of file upload with PHP aswell as make the 
    * [Conclusie](#conclusie)
 ## Extra
 Via het commando wget kan je eventueel bestanden van github halen
+
+**wget https://raw.githubusercontent.com/bobbyfonken/ProjectHosting/master/README.md**
+
+git clone kan je het geheel downloaden
+
+**git clone https://github.com/bobbyfonken/ProjectHosting.git**
+
 ## Preconfiguratie
 Zorg alvorens te beginnen ervoor dat je een update en upgrade hebt uitgevoerd.
 
