@@ -27,8 +27,8 @@ node 'puppetlamp' {
                 action  => 'accept',
         }
 
-        # allow phpmyadmin
-        firewall { '114 open port 80 apache':
+        # allow apache2
+        firewall { '114 open port 80 apache2':
                 dport   => 80,
                 proto   => tcp,
                 action  => 'accept',
