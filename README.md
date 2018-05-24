@@ -31,10 +31,10 @@ Hieronder vind je een overzicht van de VM's met IP-adres en naam.
 
 | Servername 		| Host-only		 | Nat         |
 |-------------------|:--------------:|------------:|
-| puppet 			|192.168.137.104 | 10.148.14.8 |
-| puppetLamp 		|192.168.137.105 | 10.148.14.7 |
-| puppetDns 		|192.168.137.106 | 10.148.14.4 |
-| puppetDatabase 	|192.168.137.107 | 10.148.14.1 |
+| puppet 		|172.27.66.70 | 10.148.14.8 |
+| puppetLamp 		|172.27.66.73 | 10.148.14.7 |
+| puppetDns 		|172.27.66.71 | 10.148.14.4 |
+| puppetDatabase 	|172.27.66.72 | 10.148.14.1 |
 
 We zetten eerst de netwerkconfiguratie goed. Doe dit voor elke VM zoals hieronder. 
 Veranderen het "address" naar het adres van jouw machine. 
@@ -159,10 +159,12 @@ We starten deze service nog **NIET**! Voordat we dit doen moeten we eerst zien h
 Pas de waarde aan als volgt:  
 
 From
+
 **JAVA_ARGS="-Xms2g -Xmx2g**
 
 To
 Voor 512MB, gebruik de onderstaande instellingen.
+
 **JAVA_ARGS="-Xms512m -Xmx512m"**
 
 Vervolgens ga je in onderstaande locatie nog wat aanpassen zodat puppet naar onze wensen werkt. 
@@ -260,7 +262,9 @@ Via het scriptje "gen-users sql-shell.py", kan je op basis van een inputfile met
 de systeem- en mysquser structuren voor puppet aanmaken. 
 Zie hieronder voor voorbeeld structuur voor inputfile. 
 In de python file waar het ip-adres '192.168.137.105' staat, vervang dit door het ip-adres van de server waar de files worden geupload.
-Voer het python bestand uit met commando **"python3 file.py"**.
+Voer het python bestand uit met commando 
+
+**"python3 file.py"**.
 
 **bobby;P@ssw0rd**
 
@@ -284,16 +288,21 @@ In nano kan je "ctrl + c" gebruiken om jee huidige positie te zien. Deze ga je v
 Zorg ervoor dat je hierbij in de directory van de gegenereerde bestanden staat!
 
 Dit zal de eerste 10 regels van ons huidig (bovenstaand) site.pp bestand plaatsen in ons nieuw puppetdatabase.pp bestand. 
+
 **sudo head -n 10 /etc/puppetlabs/code/environments/production/manifests/puppetdatabase.pp > puppetdatabase.pp**
  
 Dit zal de inhoud van ons genereerd bestand plaatsen in ons nieuw site.pp bestand. 
+
 **sudo cat mysqlusers-done.pp >> puppetdatabase.pp**
 
 Dit zal de regels na regel 10 van ons oorspronkelijk bestand naar ons nieuw site.pp bestand. 
+
 **sudo tail --lines=+10 /etc/puppetlabs/code/environments/production/manifests/puppetdatabase.pp >> puppetdatabase.pp**
 
 Nu moet men nog het oorspronkelijk bestand verwijderen en vervangen door ons nieuw bestand. 
+
 **sudo rm /etc/puppetlabs/code/environments/production/manifests/puppetdatabase.pp**
+
 **sudo cp puppetdatabase.pp /etc/puppetlabs/code/environments/production/manifests/puppetdatabase.pp**
 
 Voeg nu nog onderstaande sql-gebruiker toe in het manifest puppetdatabase.pp.
@@ -361,6 +370,7 @@ Onder Grants:
 
 Vervolgens kan men op de puppet agent volgende commando uitvoeren.  
 Het start de automatische configuratie van je server.
+
 **sudo /opt/puppetlabs/bin/puppet agent -t**
 
 Voor het manueel genereren van een mysql password hash, kan je inloggen op de database via de command line.
@@ -384,6 +394,7 @@ Log in als de pma user. Wachtwoord heb je normaal ingesteld in het puppetdatabas
 Om osTicket correct te installeren, volg je onderstaande stappen.
 
 **cd /var/www/html/osticket**
+
 **sudo wget http://osticket.com/sites/default/files/download/osTicket-v1.10.zip**
 
 Zodra het downloaden is gedaan, ga je het bestand uitpakken. Installeer eerst eventueel unzip (**sudo apt-get install unzip**).
@@ -405,6 +416,7 @@ Nu is het tijd om alles via de webinterface te configureren. Surf naar volgende 
 Volg de installatie instructies aandachtig. Na installatie verwijder je nog de setup directory en verander je de permissies van osTicket config file.
 
 **sudo rm -rf /var/www/html/osticket/upload/setup**
+
 **sudo chmod 0644 /var/www/html/osticket/include/ost-config.php**
 
 Nu zou osTicket werkende moeten zijn!
