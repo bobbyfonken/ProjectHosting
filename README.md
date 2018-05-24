@@ -20,11 +20,11 @@ This will automate the configuration of file upload with PHP aswell as make the 
          * [osTicket](#osticket)
    * [Conclusie](#conclusie)
 ## Extra
-Via het commando wget kan je eventueel bestanden van github halen
+Via het commando wget kan je eventueel bestanden van github halen.
 
 **wget https://raw.githubusercontent.com/bobbyfonken/ProjectHosting/master/README.md**
 
-git clone kan je het geheel downloaden
+Met git clone kan je het geheel downloaden.
 
 **git clone https://github.com/bobbyfonken/ProjectHosting.git**
 
