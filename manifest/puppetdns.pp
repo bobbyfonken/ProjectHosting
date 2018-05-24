@@ -65,7 +65,7 @@ node 'puppetdns' {
                 arecords       => ['puppetdatabase.projecthosting.     IN      A       172.27.66.72',
                                 'puppetdns.projecthosting.      IN      A       172.27.66.71',
                                 'puppetlamp.projecthosting.     IN      A       172.27.66.73',
-                                'puppet.projecthosting.         IN      A       172.27.66.70'
+                                'puppet.projecthosting.         IN      A       172.27.66.70',
                                 'puppetosticket.projecthosting.         IN      A       172.27.66.74'],
         }
 }
