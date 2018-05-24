@@ -53,8 +53,8 @@ auto enp0s3**
 iface enp0s3 inet static
 address 172.27.66.70
 netmask 255.255.255.0
-network 192.168.137.0
-gateway 192.168.137.1
+network 172.27.66.0
+gateway 172.27.66.254
 dns-nameservers 172.27.66.71
 ```
 
