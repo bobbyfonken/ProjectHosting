@@ -42,9 +42,9 @@ for line in file:
 
 	# now we will generate the mysql user txt file to use
 	mysql_hash = "*" + sha1(sha1(field2pass.encode("utf-8")).digest()).hexdigest()
-	mysqluser += "\n\t\t\t\"{}@192.168.137.105\" => {{\n\t\t\t\tensure => \"present\",\n\t\t\t\tmax_connections_per_hour => \"0\",\n\t\t\t\tmax_user_connections => \"0\",\n\t\t\t\tpassword_hash => \"{}\",\n\t\t\t}},\n".format(field1name, mysql_hash)
+	mysqluser += "\n\t\t\t\"{}@172.27.66.73\" => {{\n\t\t\t\tensure => \"present\",\n\t\t\t\tmax_connections_per_hour => \"0\",\n\t\t\t\tmax_user_connections => \"0\",\n\t\t\t\tpassword_hash => \"{}\",\n\t\t\t}},\n".format(field1name, mysql_hash)
 	mysqldatabase += "\n\t\t\t\"{}\" => {{\n\t\t\t\tensure => \"present\",\n\t\t\t\tcharset => \"utf8\",\n\t\t\t}},\n".format(field1name)
-	mysqlgrants += "\n\t\t\t\"{}@192.168.137.105/{}.*\" => {{\n\t\t\t\tensure => \"present\",\n\t\t\t\toptions => [\"GRANT\"],\n\t\t\t\tprivileges => [\"ALL\"],\n\t\t\t\ttable => \"{}.*\",\n\t\t\t\tuser => \"{}@192.168.137.105\",\n\t\t\t}},".format(field1name, field1name, field1name, field1name)
+	mysqlgrants += "\n\t\t\t\"{}@172.27.66.73/{}.*\" => {{\n\t\t\t\tensure => \"present\",\n\t\t\t\toptions => [\"GRANT\"],\n\t\t\t\tprivileges => [\"ALL\"],\n\t\t\t\ttable => \"{}.*\",\n\t\t\t\tuser => \"{}@172.27.66.73\",\n\t\t\t}},".format(field1name, field1name, field1name, field1name)
 	mysqlgrants += "\n\t\t\t\"{}@localhost/{}.*\" => {{\n\t\t\t\tensure => \"present\",\n\t\t\t\toptions => [\"GRANT\"],\n\t\t\t\tprivileges => [\"ALL\"],\n\t\t\t\ttable => \"{}.*\",\n\t\t\t\tuser => \"{}@localhost\",\n\t\t\t}},".format(field1name, field1name, field1name, field1name)
 	
 # Close the structured output
