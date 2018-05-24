@@ -1,22 +1,22 @@
 node 'puppetdns' {
-	include update
-	include psacct
-	include my_fw
-	
-	firewall { '109 allow all from puppetlamp':
-                source  => '192.168.137.105',
+        include update
+        include psacct
+        include my_fw
+
+        firewall { '109 allow all from puppetlamp':
+                source  => '172.27.66.73',
                 proto   => 'all',
                 action  => 'accept',
         }
 
         firewall { '110 allow all from puppet':
-                source  => '192.168.137.104',
+                source  => '172.27.66.70',
                 proto   => 'all',
                 action  => 'accept',
         }
 
         firewall { '111 allow all from puppetdatabase':
-                source  => '192.168.137.107',
+                source  => '172.27.66.72',
                 proto   => 'all',
                 action  => 'accept',
         }
@@ -34,38 +34,38 @@ node 'puppetdns' {
                 proto   => tcp,
                 action  => 'accept',
         }
-	
-	class {'sshd':
+
+        class {'sshd':
                 port            => '2222',
                 keybits         => '2048',
                 allownokey      => 'no',
         }
-	
-	class {'sshd::root':
-		password        => 'r0668236',
-		salt            => 'mysalt',
-	}
 
-	class {'sshd::user':
-		user    => 'bobbix',
-		key     => 'Public key here',
-		pass    => 'r0668236',
-		salt    => 'mysalt',
-		ensure  => present,
-	}
-	
-	class { 'fail2ban':
-		config_file_template => "fail2ban/${::lsbdistcodename}/etc/fail2ban/jail.conf.erb",
-	}
-	
-	class {'dns':
+        class {'sshd::root':
+                password        => 'root',
+                salt            => 'mysalt',
+        }
+         class {'sshd::user':
+                user    => 'user',
+                key     => 'AAAAB3NzaC1yc2EAAAABJQAAAQEAh77oPog3n+d/DRJJvgVU31EKqgodYo93MVQGB/siZzaE7S013EigO+/RRJZCr+t5dhovbLnlgh0t78J9NsJZ3GNZF3ay7ii3DlJNZGdLdQggJ0pVvhjf94bvEKOn/UutvwEwbEyPe0fVf0GL3qTr6hR8ACcpDQkcQxzuZAjxmyu364TxE7XNZC7tWZuF4axJqAljEPNxau69yBJL6B1ST49Axvt43xXbdb0Jg35ZvVJFbIMmZX/lNow1M8RqSuCa08MC/YM+fcQq2t3aUN1oPn4HI+wIlwZDU55SAGa1Mi2ugkXfEOayc+7tI6blbSpCDBS3fqZuLuLzH56Ev3kNlQ==',
+                pass    => 'user',
+                salt    => 'mysalt',
+                ensure  => present,
+        }
+
+        class { 'fail2ban':
+                config_file_template => "fail2ban/${::lsbdistcodename}/etc/fail2ban/jail.conf.erb",
+        }
+
+        class {'dns':
                 ns              => 'puppetdns',
                 root            => 'projecthosting',
-                nsip           => '192.168.137.106',
+                nsip           => '172.27.66.71',
                 serial          => '4',
-                arecords       => ['puppetdatabase.projecthosting.     IN      A       192.168.137.107',
-                                'puppetdns.projecthosting.      IN      A       192.168.137.106',
-                                'puppetlamp.projecthosting.     IN      A       192.168.137.105',
-                                'puppet.projecthosting.         IN      A       192.168.137.104'],
+                arecords       => ['puppetdatabase.projecthosting.     IN      A       172.27.66.72',
+                                'puppetdns.projecthosting.      IN      A       172.27.66.71',
+                                'puppetlamp.projecthosting.     IN      A       172.27.66.73',
+                                'puppet.projecthosting.         IN      A       172.27.66.70'],
         }
 }
+
