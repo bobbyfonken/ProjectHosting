@@ -2,6 +2,12 @@ node 'puppet' {
         include update
         include psacct
         
+        firewall { '108 allow all from puppetosticket':
+                source  => '172.27.66.74',
+                proto   => 'all',
+                action  => 'accept',
+        }
+        
         firewall { '109 allow all from puppetlamp':
                 source  => '172.27.66.73',
                 proto   => 'all',
