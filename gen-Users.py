@@ -4,7 +4,7 @@ import sys, os
 
 #### Variabels
 # filenames of the inputfile and outputfile
-inputFile = "users-Unstructered.csv"
+inputFile = "users.csv"
 outputFileSystemUsers = "systemusers-done.pp"
 outputFileMYsqlUsers = "mysqlusers-done.pp"
 
