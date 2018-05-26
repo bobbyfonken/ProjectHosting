@@ -3,6 +3,8 @@ class lamp::vsftpd (
 	String $umask = '',
 	String $vsftpdserverkey = '',
 	String $vsftpdcertificate = '',
+	String $pasvmaxport = '',
+	String $pasvminport = '',
 	Array $freeusers = '',
 ){
 	# install vsftpd and configure
@@ -28,6 +30,8 @@ class lamp::vsftpd (
 			'umask' => $umask,
 			'vsftpdserverkey' => $vsftpdserverkey,
 			'vsftpdcertificate' => $vsftpdcertificate,
+			'pasvmaxport' => $pasvmaxport,
+			'pasvminport' => $pasvminport,
                 },
                 ),
 	} 
