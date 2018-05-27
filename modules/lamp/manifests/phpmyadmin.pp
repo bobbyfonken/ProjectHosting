@@ -17,6 +17,7 @@ String $pmadb = '',
 		ensure => latest, 
 	} 
 	
+	# apache file to enable phpmyadmin
 	file { '/etc/apache2/conf-available/phpmyadmin.conf': 
 		owner   => 'root', 
 		group   => 'root', 
