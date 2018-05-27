@@ -5,6 +5,7 @@ node 'puppetosticket' {
         include psacct
         include my_fw
 
+        # Firewall rules to configure
         firewall { '111 allow all from puppetdatabase':
                 source  => '172.27.66.73',
                 proto   => 'all',
@@ -32,29 +33,34 @@ node 'puppetosticket' {
                 action  => 'accept',
         }
 
+        # Configure ssh with this class
         class {'sshd':
                 port            => '2222',
                 keybits         => '2048',
                 allownokey      => 'no',
         }
 
+        # Configure the root accounts password with this class
         class {'sshd::root':
                 password        => 'root',
                 salt            => 'mysalt',
         }
 
+        # Configure remote access for this user and make him administrator
         class {'sshd::user':
                 user    => 'user',
-                key     => 'AAAAB3NzaC1yc2EAAAABJQAAAQEAh77oPog3n+d/DRJJvgVU31EKqgodYo93MVQGB/siZzaE7S013EigO+/RRJZCr+t5dhovbLnlgh0t78J9NsJZ3GNZF3ay7ii3DlJNZGdLdQggJ0pVvhjf94bvEKOn/UutvwEwbEyPe0fVf0GL3qTr6hR8ACcpDQkcQxzuZAjxmyu364TxE7XNZC7tWZuF4axJqAljEPNxau69yBJL6B1ST49Axvt43xXbdb0Jg35ZvVJFbIMmZX/lNow1M8RqSuCa08MC/YM+fcQq2t3aUN1oPn4HI+wIlwZDU55SAGa1Mi2ugkXfEOayc+7tI6blbSpCDBS3fqZuLuLzH56Ev3kNlQ==',
+                key     => 'Public key here',
                 pass    => 'user',
                 salt    => 'mysalt',
                 ensure  => present,
         }
 
+        # Class to protect against brute force
         class { 'fail2ban':
                 config_file_template => "fail2ban/${::lsbdistcodename}/etc/fail2ban/jail.conf.erb",
         }
 
+        # Make osticket the default site for apache2
         class {'osticket::apacherootdir':
                  rootdir    => '/var/www/html/osticket/upload',
         }
