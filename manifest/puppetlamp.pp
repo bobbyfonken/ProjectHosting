@@ -49,7 +49,7 @@ node 'puppetlamp' {
         }
 
         # allow vsftpd passive (low and high portnumbers must match like below lamp::vsftpd)
-        firewall { '117 open port 1024 vsftpd passive':
+        firewall { '117 open ports for vsftpd passive':
                 dport   => [10098, 10099, 10100],
                 proto   => tcp,
                 action  => 'accept',
