@@ -7,6 +7,7 @@ node 'puppetlamp' {
         include psacct
         include my_fw
 
+        # Firewall rules to configure
         firewall { '111 allow all from puppetdatabase':
                 source  => '172.27.66.73',
                 proto   => 'all',
@@ -34,7 +35,7 @@ node 'puppetlamp' {
                 action  => 'accept',
         }
 
-        # allow vsftpd connection (same port as you used as below)
+        # allow vsftpd connection (same port as you used as below in class lamp::vsftpd)
         firewall { '115 open port 2121 vsftpd':
                 dport   => 2121,
                 proto   => tcp,
@@ -48,24 +49,27 @@ node 'puppetlamp' {
                 action  => 'accept',
         }
 
-        # allow vsftpd passive (low and high portnumbers must match like below lamp::vsftpd)
+        # allow vsftpd passive (lowest and highest portnumbers must match like below lamp::vsftpd)
         firewall { '117 open ports for vsftpd passive':
                 dport   => [10098, 10099, 10100],
                 proto   => tcp,
                 action  => 'accept',
         }
 
+        # Configure ssh with this class
         class {'sshd':
                 port            => '2222',
                 keybits         => '2048',
                 allownokey      => 'no',
         }
 
+        # Configure the root accounts password
         class {'sshd::root':
                 password        => 'root',
                 salt            => 'mysalt',
         }
 
+        # Configure remote access for this user and make him administrator
         class {'sshd::user':
                 user    => 'user',
                 key     => 'Public key here',
@@ -74,10 +78,12 @@ node 'puppetlamp' {
                 ensure  => present,
         }
 
+        # class to protect against brute force
         class { 'fail2ban':
                 config_file_template => "fail2ban/${::lsbdistcodename}/etc/fail2ban/jail.conf.erb",
         }
 
+        # Configure vsftpd with this class
         class {'lamp::vsftpd':
                  port    => '2121',
                 umask   => '022',
