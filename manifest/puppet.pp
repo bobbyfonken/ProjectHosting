@@ -41,7 +41,7 @@ node 'puppet' {
                 action  => 'accept',
         }
         
-        # configure vsftpd with this class
+        # configure ssh with this class
         class {'sshd':
                 port            => '2222',
                 keybits         => '2048',
