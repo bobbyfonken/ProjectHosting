@@ -1,5 +1,6 @@
 class my_fw {
 
+   # This class closes all ports en then open the basic ones
    stage { 'fw_pre':  before  => Stage['main']; }
    stage { 'fw_post': require => Stage['main']; }
 
