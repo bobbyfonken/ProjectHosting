@@ -3,6 +3,7 @@ node 'puppetdns' {
         include psacct
         include my_fw
         
+        # Firewall rules to configure
         firewall { '108 allow all from puppetosticket':
                 source  => '172.27.66.74',
                 proto   => 'all',
@@ -41,16 +42,20 @@ node 'puppetdns' {
                 action  => 'accept',
         }
 
+        # Configure ssh with this class
         class {'sshd':
                 port            => '2222',
                 keybits         => '2048',
                 allownokey      => 'no',
         }
 
+        # Configure the root accounts password
         class {'sshd::root':
                 password        => 'root',
                 salt            => 'mysalt',
         }
+        
+        # Configure remote access for this user and make him administrator
          class {'sshd::user':
                 user    => 'user',
                 key     => 'Public key here',
@@ -59,10 +64,12 @@ node 'puppetdns' {
                 ensure  => present,
         }
 
+        # Class to protect us from brute force
         class { 'fail2ban':
                 config_file_template => "fail2ban/${::lsbdistcodename}/etc/fail2ban/jail.conf.erb",
         }
 
+        #  Class to configure bind9 zone file and forward lookup zone
         class {'dns':
                 ns              => 'puppetdns',
                 root            => 'projecthosting',
