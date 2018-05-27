@@ -36,11 +36,12 @@ for line in file:
 	field1name = "".join(field1.split() )
 	field2pass = "".join(field2.split() )
 
+	# The \t and \n are used to structure the output files with enters and tabs
 	# First we will generate the users of the system in a file
 	resultSystemUsers += "user {{ \"{}\":\n\tensure => present,\n\tpassword => pw_hash(\"{}\", \"SHA-256\", \"mysalt\"),\n\tpurge_ssh_keys => true,\n\tuid => \"{}\",\n\tshell => \"/bin/bash\",\n\thome => \"/home/{}\",\n\tmanagehome => true,\n}}\n\n".format(field1name, field2pass, uid, field1name)
 	uid += 1
 
-	# now we will generate the mysql user txt file to use
+	# now we will generate the mysql users of the database in a file
 	mysql_hash = "*" + sha1(sha1(field2pass.encode("utf-8")).digest()).hexdigest()
 	mysqluser += "\n\t\t\t\"{}@172.27.66.73\" => {{\n\t\t\t\tensure => \"present\",\n\t\t\t\tmax_connections_per_hour => \"0\",\n\t\t\t\tmax_user_connections => \"0\",\n\t\t\t\tpassword_hash => \"{}\",\n\t\t\t}},\n".format(field1name, mysql_hash)
 	mysqldatabase += "\n\t\t\t\"{}\" => {{\n\t\t\t\tensure => \"present\",\n\t\t\t\tcharset => \"utf8\",\n\t\t\t}},\n".format(field1name)
