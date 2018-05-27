@@ -4,6 +4,7 @@ node 'puppetdatabase' {
         include psacct
         include my_fw
 	
+	# firewall rules to configure
 	firewall { '110 allow all from puppetosticket':
                         source  => '172.27.66.74',
                         proto   => 'all',
@@ -37,24 +38,27 @@ node 'puppetdatabase' {
                         action  => 'accept',
         }
 
-        # This should be the same as the pma user, database, and password
+        # This should be the same as the pma user, database, and password as said in class ::mysql::server below
         class {'lamp::phpmyadmin':
                 controluser     => 'pma',
                 controlpass     => 'pma',
                 pmadb           => 'phpmyadmin',
         }
 
+	# Configure ssh
         class {'sshd':
                 port            => '2222',
                 keybits         => '2048',
                 allownokey      => 'no',
         }
 
+	# Configure root accounts password
         class {'sshd::root':
                 password        => 'root',
                 salt            => 'mysalt',
         }
 	
+	# Configure remote access for this user and make him administrator
 	class {'sshd::user':
                 user    => 'user',
                 key     => 'Public key here',
@@ -63,10 +67,12 @@ node 'puppetdatabase' {
                 ensure  => present,
         }
 
+	# Class to protect against brute force
         class { 'fail2ban':
                 config_file_template => "fail2ban/${::lsbdistcodename}/etc/fail2ban/jail.conf.erb",
         }
 
+	# Configure mysql database with root password, users, databases, grants ...
         class { '::mysql::server':
         root_password    => 'password',
                 remove_default_accounts => true,
