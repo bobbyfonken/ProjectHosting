@@ -12,7 +12,7 @@ This will automate the configuration of file upload with PHP aswell as make the 
          * [Puppet agent](#puppet-agent)
          * [Puppet certificaten](#puppet-certificaten)
          * [Puppet manifesten/modules](#puppet-manifestenmodules)
-      * [Puppet LAMP-stack](#puppet-lamp-stack)
+      * [Puppet farm](#puppet-farm)
          * [Generating system users and mysql users with Python3](#generating-system-users-and-mysql-users-with-python3)
       * [Postconfiguratie](#postconfiguratie)
          * [VSFTPD](#vsftpd)
@@ -259,7 +259,7 @@ Voer nu op de agent het volgende  commado uit:
 
 Als dit goed verloopt, kan je na "sudo cat /tmp/example-ip" doen op de agent. Je zou het ip adres van addapter 1 moeten zien.
 
-## Puppet LAMP-stack
+## Puppet farm
 Nu gaan we een lamp-stack installeren doormiddel van puppet. We maken eerst op de puppet master de nodige mappen. Geïnstalleerde of gecreëerde modules komen in volgende directory te staan. 
 
 **/etc/puppetlabs/code/environments/production/modules**
