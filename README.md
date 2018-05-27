@@ -260,7 +260,7 @@ Voer nu op de agent het volgende  commado uit:
 Als dit goed verloopt, kan je na "sudo cat /tmp/example-ip" doen op de agent. Je zou het ip adres van addapter 1 moeten zien.
 
 ## Puppet farm
-Nu gaan we een lamp-stack installeren doormiddel van puppet. We maken eerst op de puppet master de nodige mappen. Geïnstalleerde of gecreëerde modules komen in volgende directory te staan. 
+Nu gaan we een puppet farm installeren doormiddel van puppet. We maken eerst op de puppet master de nodige mappen. Geïnstalleerde of gecreëerde modules komen in volgende directory te staan. 
 
 **/etc/puppetlabs/code/environments/production/modules**
 
