@@ -2,7 +2,7 @@ class my_fw::pre {
   Firewall {
     require => undef,
   }
-   # Default firewall rules
+   # Default firewall rules, opens the basic ports
   firewall { '000 accept all icmp':
     proto  => 'icmp',
     action => 'accept',
