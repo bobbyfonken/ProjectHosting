@@ -5,21 +5,25 @@ String $nsip = '',
 String $serial = '',
 Array $arecords = '',
 ){
+	# install bind9
 	package { 'bind9':
 			ensure => 'installed',
 	}
 	
+	# ensure bind9 is running
 	service { 'bind9':
 			ensure => 'running',
 			enable => true,
 			require => Package['bind9'],
 	}
 	
+	# install dns toubleshooting tools
 	package { 'dnsutils':
 			ensure => 'installed',
 	
 	}
 	
+	# template file for your zone
 	file { '/etc/bind/named.conf.local':
 		notify	=> Service['bind9'],
 		mode	=> '0640',
@@ -33,7 +37,7 @@ Array $arecords = '',
 		),
 	}
 
-	# Make directory for zone files
+	# Make directory for zone
 	file { '/etc/bind/zones/':
 			ensure => 'directory',
 			owner  => 'root',
@@ -42,6 +46,7 @@ Array $arecords = '',
 			require	=> Package['bind9'],
 	}
 	
+	# template file for your forward lookup zone
 	file { '/etc/bind/zones/projecthosting':
 			notify  => Service['bind9'],
 			mode    => '0640',
